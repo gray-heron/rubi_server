@@ -1,0 +1,7 @@
+string board
+---
+string description
+string version
+string driver
+string[] fields
+string[] functions

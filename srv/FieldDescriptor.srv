@@ -1,0 +1,7 @@
+string board_name
+string field_name
+---
+string[] subfields
+int32 typecode
+bool input
+bool output
