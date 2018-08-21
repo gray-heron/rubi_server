@@ -360,21 +360,21 @@ void RosModule::SetCansUtilization(std::vector<float> util)
 
 void RosModule::LogInfo(string msg)
 {
-    ROS_INFO(msg.c_str());
+    ROS_INFO("%s", msg.c_str());
     ros::spinOnce();
     // printf("Rubi info: %s\n", msg.c_str());
 }
 
 void RosModule::LogWarning(string msg)
 {
-    ROS_WARN(msg.c_str());
+    ROS_WARN("%s", msg.c_str());
     ros::spinOnce();
     // printf("Rubi warning: %s\n", msg.c_str());
 }
 
 void RosModule::LogError(string msg)
 {
-    ROS_FATAL(msg.c_str());
+    ROS_FATAL("%s", msg.c_str());
     ros::spinOnce();
     // printf("Rubi error: %s\n", msg.c_str());
 }
