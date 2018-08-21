@@ -1,19 +1,20 @@
 #include <functional>
 #include <thread>
 
-#include <rubi_driver/BoardAnnounce.h>
-#include <rubi_driver/BoardDescriptor.h>
-#include <rubi_driver/FieldDescriptor.h>
-#include <rubi_driver/FuncDescriptor.h>
-#include <rubi_driver/ShowBoards.h>
+#include <rubi_server/BoardAnnounce.h>
+#include <rubi_server/BoardDescriptor.h>
+#include <rubi_server/FieldDescriptor.h>
+#include <rubi_server/FuncDescriptor.h>
+#include <rubi_server/ShowBoards.h>
 
-#include <rubi_driver/BoardOnline.h>
-#include <rubi_driver/CansNames.h>
-#include <rubi_driver/RubiBool.h>
-#include <rubi_driver/RubiFloat.h>
-#include <rubi_driver/RubiInt.h>
-#include <rubi_driver/RubiString.h>
-#include <rubi_driver/RubiUnsignedInt.h>
+#include <rubi_server/BoardOnline.h>
+#include <rubi_server/CansNames.h>
+#include <rubi_server/RubiBool.h>
+#include <rubi_server/RubiFloat.h>
+#include <rubi_server/RubiInt.h>
+#include <rubi_server/RubiString.h>
+#include <rubi_server/RubiUnsignedInt.h>
+
 #include <std_msgs/Empty.h>
 #include <std_msgs/Float32MultiArray.h>
 
@@ -110,15 +111,15 @@ void DeinterpretInt(uint8_t *target, int64_t num, int typecode)
 void PanicHandler(const std_msgs::Empty::ConstPtr &data) { ASSERT(0); }
 
 bool CansNamesHandler(std::vector<string> names,
-                      rubi_driver::CansNames::Request &req,
-                      rubi_driver::CansNames::Response &res)
+                      rubi_server::CansNames::Request &req,
+                      rubi_server::CansNames::Response &res)
 {
     res.names = names;
     return true;
 }
 
-bool ShowBoardsHandler(rubi_driver::ShowBoards::Request &req,
-                       rubi_driver::ShowBoards::Response &res)
+bool ShowBoardsHandler(rubi_server::ShowBoards::Request &req,
+                       rubi_server::ShowBoards::Response &res)
 {
     for (const auto &entry : BoardManager::inst().descriptor_map)
     {
@@ -128,8 +129,8 @@ bool ShowBoardsHandler(rubi_driver::ShowBoards::Request &req,
     return true;
 }
 
-bool BoardDescriptorHandler(rubi_driver::BoardDescriptor::Request &req,
-                            rubi_driver::BoardDescriptor::Response &res)
+bool BoardDescriptorHandler(rubi_server::BoardDescriptor::Request &req,
+                            rubi_server::BoardDescriptor::Response &res)
 {
     auto board_type = BoardManager::inst().descriptor_map.find(req.board);
     if (board_type == BoardManager::inst().descriptor_map.end())
@@ -152,8 +153,8 @@ bool BoardDescriptorHandler(rubi_driver::BoardDescriptor::Request &req,
 }
 
 bool BoardOnlineHandler(std::shared_ptr<RosBoardHandler> handler,
-                        rubi_driver::BoardOnline::Request &req,
-                        rubi_driver::BoardOnline::Response &res)
+                        rubi_server::BoardOnline::Request &req,
+                        rubi_server::BoardOnline::Response &res)
 {
     auto backend_handler = handler->BackendReady();
     if (!backend_handler)
@@ -169,8 +170,8 @@ bool BoardOnlineHandler(std::shared_ptr<RosBoardHandler> handler,
 }
 
 // fixme those should be methods of the RosModule
-bool FieldDescriptorHandler(rubi_driver::FieldDescriptor::Request &req,
-                            rubi_driver::FieldDescriptor::Response &res)
+bool FieldDescriptorHandler(rubi_server::FieldDescriptor::Request &req,
+                            rubi_server::FieldDescriptor::Response &res)
 {
     auto &boards = BoardManager::inst().descriptor_map;
 
@@ -200,15 +201,15 @@ bool FieldDescriptorHandler(rubi_driver::FieldDescriptor::Request &req,
     return true;
 }
 
-bool FuncDescriptorHandler(rubi_driver::FuncDescriptor::Request &req,
-                           rubi_driver::FuncDescriptor::Response &res)
+bool FuncDescriptorHandler(rubi_server::FuncDescriptor::Request &req,
+                           rubi_server::FuncDescriptor::Response &res)
 {
     ASSERT(0);
 }
 
 void InboundFieldCallbackInt(std::shared_ptr<RosBoardHandler> handler,
                              int field_id,
-                             const rubi_driver::RubiInt::ConstPtr &data)
+                             const rubi_server::RubiInt::ConstPtr &data)
 {
     auto backend_handler = handler->BackendReady();
     if (!backend_handler)
@@ -235,14 +236,14 @@ void InboundFieldCallbackInt(std::shared_ptr<RosBoardHandler> handler,
 
 void InboundFieldCallbackUnsignedInt(
     std::shared_ptr<RosBoardHandler> handler, int func_id,
-    const rubi_driver::RubiUnsignedInt::ConstPtr &data)
+    const rubi_server::RubiUnsignedInt::ConstPtr &data)
 {
     ASSERT(0);
 }
 
 void InboundFieldCallbackBool(std::shared_ptr<RosBoardHandler> handler,
                               int field_id,
-                              const rubi_driver::RubiBool::ConstPtr &data)
+                              const rubi_server::RubiBool::ConstPtr &data)
 {
     auto backend_handler = handler->BackendReady();
     if (!backend_handler)
@@ -265,14 +266,14 @@ void InboundFieldCallbackBool(std::shared_ptr<RosBoardHandler> handler,
 
 void InboundFieldCallbackFloat(std::shared_ptr<RosBoardHandler> handler,
                                int func_id,
-                               const rubi_driver::RubiFloat::ConstPtr &data)
+                               const rubi_server::RubiFloat::ConstPtr &data)
 {
     ASSERT(0);
 }
 
 void InboundFieldCallbackString(std::shared_ptr<RosBoardHandler> handler,
                                 int func_id,
-                                const rubi_driver::RubiString::ConstPtr &data)
+                                const rubi_server::RubiString::ConstPtr &data)
 {
     ASSERT(0);
 }
@@ -303,7 +304,7 @@ bool RosModule::Init(stringmap args)
 {
     int zero_args_wtf_ros_just_pass_through_value = 0;
     ros::init(zero_args_wtf_ros_just_pass_through_value, nullptr,
-              "rubi_driver");
+              "rubi_server");
 
     ros_stuff->n = new ros::NodeHandle;
 
@@ -323,7 +324,7 @@ bool RosModule::Init(stringmap args)
         "/rubi/get_board_descriptor", BoardDescriptorHandler);
 
     ros_stuff->board_announcer =
-        ros_stuff->n->advertise<rubi_driver::BoardAnnounce>("/rubi/new_boards",
+        ros_stuff->n->advertise<rubi_server::BoardAnnounce>("/rubi/new_boards",
                                                             10);
 
     ros_stuff->can_load_publisher =
@@ -334,8 +335,8 @@ bool RosModule::Init(stringmap args)
         "/rubi/panic", 1, PanicHandler);
 
     // WHY ON EARTH AUTO'S STD::FUNC INFERENCE IS BROKEN?@!
-    boost::function<bool(rubi_driver::CansNames::Request &,
-                         rubi_driver::CansNames::Response &)>
+    boost::function<bool(rubi_server::CansNames::Request &,
+                         rubi_server::CansNames::Response &)>
         cans_names_callback =
             std::bind(CansNamesHandler, cans_names, std::placeholders::_1,
                       std::placeholders::_2);
@@ -386,7 +387,7 @@ std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
 
     boards.push_back(ret);
 
-    rubi_driver::BoardAnnounce msg;
+    rubi_server::BoardAnnounce msg;
     msg.driver = inst.descriptor->driver;
     msg.name = inst.descriptor->board_name;
     msg.version = inst.descriptor->version;
@@ -434,8 +435,8 @@ void RosBoardHandler::Init()
                                      std::placeholders::_1);
 
     // WHY ON EARTH AUTO'S STD::FUNC INFERENCE IS BROKEN?@!
-    boost::function<bool(rubi_driver::BoardOnline::Request &,
-                         rubi_driver::BoardOnline::Response &)>
+    boost::function<bool(rubi_server::BoardOnline::Request &,
+                         rubi_server::BoardOnline::Response &)>
         online_callback =
             std::bind(BoardOnlineHandler, shared_from_this(),
                       std::placeholders::_1, std::placeholders::_2);
@@ -472,7 +473,7 @@ void RosBoardHandler::Init()
                 field->access == RUBI_READWRITE)
             {
                 ros_stuff->field_publishers.push_back(
-                    n.advertise<rubi_driver::RubiInt>(
+                    n.advertise<rubi_server::RubiInt>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
                         1));
@@ -490,7 +491,7 @@ void RosBoardHandler::Init()
                               fc - 1, std::placeholders::_1);
 
                 ros_stuff->field_subscribers.push_back(
-                    n.subscribe<rubi_driver::RubiInt>(
+                    n.subscribe<rubi_server::RubiInt>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_to_board/" + field->name,
                         1, callback));
@@ -504,7 +505,7 @@ void RosBoardHandler::Init()
                 field->access == RUBI_READWRITE)
             {
                 ros_stuff->field_publishers.push_back(
-                    n.advertise<rubi_driver::RubiUnsignedInt>(
+                    n.advertise<rubi_server::RubiUnsignedInt>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
                         10));
@@ -522,7 +523,7 @@ void RosBoardHandler::Init()
                                           std::placeholders::_1);
 
                 ros_stuff->field_subscribers.push_back(
-                    n.subscribe<rubi_driver::RubiUnsignedInt>(
+                    n.subscribe<rubi_server::RubiUnsignedInt>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_to_board/" + field->name,
                         1, callback));
@@ -534,7 +535,7 @@ void RosBoardHandler::Init()
                 field->access == RUBI_READWRITE)
             {
                 ros_stuff->field_publishers.push_back(
-                    n.advertise<rubi_driver::RubiBool>(
+                    n.advertise<rubi_server::RubiBool>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
                         10));
@@ -552,7 +553,7 @@ void RosBoardHandler::Init()
                               fc - 1, std::placeholders::_1);
 
                 ros_stuff->field_subscribers.push_back(
-                    n.subscribe<rubi_driver::RubiBool>(
+                    n.subscribe<rubi_server::RubiBool>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_to_board/" + field->name,
                         1, callback));
@@ -564,7 +565,7 @@ void RosBoardHandler::Init()
                 field->access == RUBI_READWRITE)
             {
                 ros_stuff->field_publishers.push_back(
-                    n.advertise<rubi_driver::RubiFloat>(
+                    n.advertise<rubi_server::RubiFloat>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
                         10));
@@ -582,7 +583,7 @@ void RosBoardHandler::Init()
                               fc - 1, std::placeholders::_1);
 
                 ros_stuff->field_subscribers.push_back(
-                    n.subscribe<rubi_driver::RubiFloat>(
+                    n.subscribe<rubi_server::RubiFloat>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_to_board/" + field->name,
                         1, callback));
@@ -595,7 +596,7 @@ void RosBoardHandler::Init()
                 field->access == RUBI_READWRITE)
             {
                 ros_stuff->field_publishers.push_back(
-                    n.advertise<rubi_driver::RubiString>(
+                    n.advertise<rubi_server::RubiString>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
                         10));
@@ -613,7 +614,7 @@ void RosBoardHandler::Init()
                               fc - 1, std::placeholders::_1);
 
                 ros_stuff->field_subscribers.push_back(
-                    n.subscribe<rubi_driver::RubiString>(
+                    n.subscribe<rubi_server::RubiString>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_to_board/" + field->name,
                         1, callback));
@@ -629,11 +630,11 @@ void RosBoardHandler::Init()
 void RosBoardHandler::FFDataInbound(std::vector<uint8_t> &data, int ffid)
 {
     // Yuck!
-    rubi_driver::RubiInt i32;
-    rubi_driver::RubiUnsignedInt u32;
-    rubi_driver::RubiFloat f32;
-    rubi_driver::RubiString str;
-    rubi_driver::RubiBool bools;
+    rubi_server::RubiInt i32;
+    rubi_server::RubiUnsignedInt u32;
+    rubi_server::RubiFloat f32;
+    rubi_server::RubiString str;
+    rubi_server::RubiBool bools;
     std_msgs::Empty emp;
 
     boost::optional<ros::Publisher> publisher;

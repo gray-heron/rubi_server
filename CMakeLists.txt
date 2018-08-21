@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rubi_driver)
+project(rubi_server)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -111,7 +111,7 @@ generate_messages(DEPENDENCIES std_msgs)
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES input_manager
-#  CATKIN_DEPENDS driver_msgs input_msgs roscpp rospy std_msgs
+#  CATKIN_DEPENDS server_msgs input_msgs roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 
@@ -134,29 +134,29 @@ include_directories(
 # )
 
 ## Declare a C++ executable
-add_executable(rubi_driver
+add_executable(rubi_server
   src/board.cpp src/communication.cpp src/can_handler.cpp src/descriptors.cpp
   src/main.cpp src/protocol.cpp src/ros_frontend.cpp
   src/rubi_autodefs.cpp src/socketcan.cpp src/commons.cpp)
 
-add_executable(rubi_fake_driver
+add_executable(rubi_fake_server
   src/fake_communication.cpp src/descriptors.cpp
   src/fake_server.cpp src/ros_frontend.cpp src/rubi_autodefs.cpp
   src/commons.cpp)
 
-add_dependencies(rubi_driver rubi_driver_generate_messages_cpp)
-add_dependencies(rubi_fake_driver rubi_driver_generate_messages_cpp)
+add_dependencies(rubi_server rubi_server_generate_messages_cpp)
+add_dependencies(rubi_fake_server rubi_server_generate_messages_cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(input_manager_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(rubi_driver
+ target_link_libraries(rubi_server
    ${catkin_LIBRARIES}
  )
 
- target_link_libraries(rubi_fake_driver
+ target_link_libraries(rubi_fake_server
    ${catkin_LIBRARIES}
  )
 
@@ -175,13 +175,13 @@ add_dependencies(rubi_fake_driver rubi_driver_generate_messages_cpp)
 # )
 
 ## Mark executables and/or libraries for installation
- install(TARGETS rubi_driver rubi_driver
+ install(TARGETS rubi_server rubi_server
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 
- install(TARGETS rubi_fake_driver rubi_fake_driver
+ install(TARGETS rubi_fake_server rubi_fake_server
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
