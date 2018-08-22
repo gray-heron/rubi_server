@@ -56,7 +56,8 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
     {
         for (const auto &handler : address_pool)
         {
-            if (handler && !(*handler)->IsDead() && (*handler)->GetBoard().descriptor)
+            if (handler && !(*handler)->IsDead() &&
+                (*handler)->GetBoard().descriptor)
             {
                 (*handler)->KeepAliveRequest();
             }
@@ -118,4 +119,16 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
                 "Unknown message received.");
         }
     }
+}
+
+uint64_t CanHandler::GetTrafficSoFar(bool reset)
+{
+    uint64_t total_data =
+        socketcan->GetReceivedDataSize() + socketcan->GetSentDataSize();
+    uint64_t to_return = total_data - traffic_reported;
+
+    if (reset)
+        traffic_reported = total_data;
+
+    return to_return;
 }

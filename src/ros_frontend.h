@@ -28,7 +28,7 @@ class RosModule : public RubiFrontend
     RosModule(RosModule const &) = delete;
     void operator=(RosModule const &) = delete;
 
-    bool Init(stringmap args) override;
+    bool Init(stringmap args, std::vector<std::string> cans_names) override;
 
     void Spin() override;
 
@@ -36,7 +36,7 @@ class RosModule : public RubiFrontend
     void LogWarning(std::string msg) override;
     void LogError(std::string msg) override;
 
-    void SetCansUtilization(std::vector<float> util) override;
+    void ReportCansUtilization(std::vector<float> util) override;
 
     std::shared_ptr<FrontendBoardHandler> NewBoard(BoardInstance inst) override;
 };

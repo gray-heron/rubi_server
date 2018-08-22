@@ -27,8 +27,7 @@ class CanHandler
     friend class ProtocolHandler;
 
     std::vector<float> traffic;
-    float traffic_so_far = 0.0f;
-    float max_allowed_traffic = 0.9f;
+    uint64_t traffic_reported = 0;
 
     std::unique_ptr<SocketCan> socketcan;
 
@@ -43,6 +42,8 @@ class CanHandler
 
   public:
     CanHandler(std::string can_name);
+    uint64_t GetTrafficSoFar(bool reset = false);
+
     // std::shared_ptr<BoardCommunicationHandler> GetHandler(int board_node_id);
     void Tick(std::chrono::system_clock::time_point time);
 };

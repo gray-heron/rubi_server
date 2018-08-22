@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     boost::split(cans, args["cans"], boost::is_any_of(","));
 
     sptr<RosModule> frontend = std::make_shared<RosModule>();
-    frontend->Init(args);
+    frontend->Init(args, cans);
 
     BoardManager::inst().frontend = frontend;
     BoardManager::inst().Init(cans);

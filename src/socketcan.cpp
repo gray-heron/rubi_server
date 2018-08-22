@@ -10,6 +10,10 @@
 #include "exceptions.h"
 #include "socketcan.h"
 
+// TODO: Clean this up
+
+#define CAN_FRAME_OVERHEAD 6
+
 char ctrlmsg[CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];
 msghdr smsg;
 struct iovec iov;
@@ -36,6 +40,10 @@ int SocketCan::can_close()
     return 0;
 }
 
+int SocketCan::GetReceivedDataSize() { return rx_data_n; }
+
+int SocketCan::GetSentDataSize() { return tx_data_n; }
+
 int SocketCan::can_send(std::pair<uint16_t, std::vector<uint8_t>> data)
 {
     int retval;
@@ -52,6 +60,7 @@ int SocketCan::can_send(std::pair<uint16_t, std::vector<uint8_t>> data)
     }
     else
     {
+        tx_data_n += data.second.size() + CAN_FRAME_OVERHEAD;
         return (0);
     }
 }
@@ -116,6 +125,8 @@ SocketCan::can_receive(uint32_t timeout_ms)
                     std::vector<uint8_t> data;
                     data.resize(frame.can_dlc);
                     memcpy(data.data(), frame.data, data.size());
+                    rx_data_n += data.size() + CAN_FRAME_OVERHEAD;
+
                     return std::tuple<uint16_t, std::vector<uint8_t>, timeval>(
                         frame.can_id, data, tv);
                 }

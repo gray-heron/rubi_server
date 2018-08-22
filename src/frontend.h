@@ -16,14 +16,14 @@ class RubiFrontend
 
     virtual ~RubiFrontend() = default;
 
-    virtual bool Init(stringmap args) = 0;
+    virtual bool Init(stringmap args, std::vector<std::string> cans_names) = 0;
     virtual void Spin() = 0;
 
     virtual void LogInfo(std::string msg) = 0;
     virtual void LogWarning(std::string msg) = 0;
     virtual void LogError(std::string msg) = 0;
 
-    virtual void SetCansUtilization(std::vector<float> util) = 0;
+    virtual void ReportCansUtilization(std::vector<float> util) = 0;
 
     virtual std::shared_ptr<FrontendBoardHandler>
     NewBoard(BoardInstance inst) = 0;

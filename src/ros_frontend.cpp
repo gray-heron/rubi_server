@@ -300,8 +300,10 @@ void BoardSleepCallback(std::shared_ptr<RosBoardHandler> handler,
     ASSERT(0);
 }
 
-bool RosModule::Init(stringmap args)
+bool RosModule::Init(stringmap args, std::vector<string> __cans_names)
 {
+    cans_names = __cans_names;
+
     int zero_args_wtf_ros_just_pass_through_value = 0;
     ros::init(zero_args_wtf_ros_just_pass_through_value, nullptr,
               "rubi_server");
@@ -348,7 +350,7 @@ bool RosModule::Init(stringmap args)
     return true;
 }
 
-void RosModule::SetCansUtilization(std::vector<float> util)
+void RosModule::ReportCansUtilization(std::vector<float> util)
 {
     ASSERT(util.size() == cans_names.size());
 

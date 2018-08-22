@@ -17,10 +17,15 @@ void BoardManager::Init(std::vector<std::string> cans_names)
 
 void BoardManager::Spin(std::chrono::system_clock::time_point time)
 {
+    std::vector<float> utilization;
+
     for (const auto &can_entry : cans)
     {
         can_entry.second->Tick(time);
+        utilization.push_back(can_entry.second->GetTrafficSoFar(true));
     }
+
+    frontend->ReportCansUtilization(utilization);
 }
 
 void BoardManager::RegisterNewHandler(
