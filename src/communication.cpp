@@ -27,7 +27,7 @@ BoardCommunicationHandler::BoardCommunicationHandler(CanHandler *can_handler,
                                                      uint8_t board_nodeid)
     : can_handler(can_handler), dead(false), addressed(false),
       operational(false), lost(false), keep_alives_missed(0),
-      received_descriptors(0)
+      keep_alive_received(true), received_descriptors(0)
 {
     protocol = std::unique_ptr<ProtocolHandler>(
         new ProtocolHandler(this, board_nodeid, can_handler));

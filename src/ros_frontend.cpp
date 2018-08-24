@@ -364,21 +364,18 @@ void RosModule::LogInfo(string msg)
 {
     ROS_INFO("%s", msg.c_str());
     ros::spinOnce();
-    // printf("Rubi info: %s\n", msg.c_str());
 }
 
 void RosModule::LogWarning(string msg)
 {
     ROS_WARN("%s", msg.c_str());
     ros::spinOnce();
-    // printf("Rubi warning: %s\n", msg.c_str());
 }
 
 void RosModule::LogError(string msg)
 {
     ROS_FATAL("%s", msg.c_str());
     ros::spinOnce();
-    // printf("Rubi error: %s\n", msg.c_str());
 }
 
 std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
@@ -728,7 +725,7 @@ void RosBoardHandler::ConnectionLost() {}
 sptr<BoardCommunicationHandler> RosBoardHandler::BackendReady()
 {
     sptr<BoardCommunicationHandler> ret;
-    if (ret->IsDead() || !(ret = board.backend_handler.lock()))
+    if (!(ret = board.backend_handler.lock()) || ret->IsDead())
     {
         ret = BoardManager::inst().RequestNewHandler(board, shared_from_this());
         if (ret)

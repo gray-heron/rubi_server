@@ -15,6 +15,9 @@ int main(int argc, char **argv)
     vector<string> cans;
     stringmap args;
 
+    sptr<RosModule> frontend = std::make_shared<RosModule>();
+    BoardManager::inst().frontend = frontend;
+
     if (!parseArguments("--", '=', argc, argv, args))
         Log::Error("Error occured while parsing input arguments!");
 
@@ -23,10 +26,7 @@ int main(int argc, char **argv)
 
     boost::split(cans, args["cans"], boost::is_any_of(","));
 
-    sptr<RosModule> frontend = std::make_shared<RosModule>();
     frontend->Init(args, cans);
-
-    BoardManager::inst().frontend = frontend;
     BoardManager::inst().Init(cans);
 
     while (1)

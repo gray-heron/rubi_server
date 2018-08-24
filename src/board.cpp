@@ -33,12 +33,29 @@ void BoardManager::RegisterNewHandler(
 {
     sptr<BoardCommunicationHandler> old_backend_handler;
     auto board_id = new_backend_handler->GetBoard().id;
-    auto board_descriptor = new_backend_handler->GetBoard().descriptor;
+    sptr<BoardDescriptor> board_descriptor =
+        new_backend_handler->GetBoard().descriptor;
 
     new_backend_handler->HandshakeComplete();
 
-    const auto &handlers_bank =
-        BoardManager::inst().handlers.find(board_descriptor);
+    std::map<sptr<BoardDescriptor>, std::vector<BoardInstance>>::iterator
+        handlers_bank = BoardManager::inst().handlers.end();
+
+    for (auto handler_entry = BoardManager::inst().handlers.begin();
+         handler_entry != BoardManager::inst().handlers.end(); ++handler_entry)
+    {
+        if (handler_entry->first->board_name ==
+            new_backend_handler->GetBoard().descriptor->board_name)
+        {
+            ASSERT(*new_backend_handler->GetBoard().descriptor ==
+                   *handler_entry->first);
+            board_descriptor = handler_entry->first;
+            new_backend_handler->GetBoard().descriptor = handler_entry->first;
+            handlers_bank = handler_entry;
+
+            break;
+        }
+    }
 
     std::vector<BoardInstance>::iterator i;
 
@@ -114,7 +131,8 @@ BoardManager::RequestNewHandler(BoardInstance inst,
     sptr<BoardCommunicationHandler> new_handler, old_handler;
     for (const auto &holden_handler : holden_handlers)
     {
-        if (holden_handler->GetBoard().descriptor == inst.descriptor &&
+        if (!holden_handler->IsDead() && !holden_handler->IsLost() &&
+            *holden_handler->GetBoard().descriptor == *inst.descriptor &&
             holden_handler->GetBoard().id == inst.id)
         {
             new_handler = holden_handler;

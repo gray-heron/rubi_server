@@ -213,7 +213,7 @@ bool BoardDescriptor::operator==(const BoardDescriptor &rhs)
 
 bool FFDescriptor::operator!=(const sptr<FFDescriptor> &rhs)
 {
-    return !(*this != rhs);
+    return !(*this == rhs);
 }
 
 bool FieldDescriptor::operator==(const sptr<FFDescriptor> &rhs)
