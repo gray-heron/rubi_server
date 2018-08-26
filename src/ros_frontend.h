@@ -28,7 +28,8 @@ class RosModule : public RubiFrontend
     RosModule(RosModule const &) = delete;
     void operator=(RosModule const &) = delete;
 
-    bool Init(stringmap args, std::vector<std::string> cans_names) override;
+    bool Init(int argc, char **argv) override;
+    virtual std::vector<std::string> GetCansNames() override;
 
     void Spin() override;
 

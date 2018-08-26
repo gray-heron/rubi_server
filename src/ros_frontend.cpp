@@ -1,3 +1,4 @@
+#include <boost/algorithm/string.hpp>
 #include <functional>
 #include <thread>
 
@@ -300,15 +301,22 @@ void BoardSleepCallback(std::shared_ptr<RosBoardHandler> handler,
     ASSERT(0);
 }
 
-bool RosModule::Init(stringmap args, std::vector<string> __cans_names)
+bool RosModule::Init(int argc, char **argv)
 {
-    cans_names = __cans_names;
+    string cans_names_raw;
 
-    int zero_args_wtf_ros_just_pass_through_value = 0;
-    ros::init(zero_args_wtf_ros_just_pass_through_value, nullptr,
-              "rubi_server");
+    ros::init(argc, argv, "rubi_server");
+    ros_stuff->n = new ros::NodeHandle("~");
 
-    ros_stuff->n = new ros::NodeHandle;
+    if (ros_stuff->n->getParam("cans", cans_names_raw))
+    {
+        boost::split(cans_names, cans_names_raw, boost::is_any_of(","));
+    }
+    else
+    {
+        LogWarning("No can interfaces given! Assuming its can0.");
+        cans_names = {"can0"};
+    }
 
     if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME,
                                        ros::console::levels::Info))
@@ -411,6 +419,8 @@ std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
 
     return std::shared_ptr<FrontendBoardHandler>(ret);
 }
+
+std::vector<std::string> RosModule::GetCansNames() { return cans_names; }
 
 RosBoardHandler::RosBoardHandler(BoardInstance inst, RosModule *_ros_module)
     : board(inst), ros_module(_ros_module)

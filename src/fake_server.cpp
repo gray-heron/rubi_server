@@ -26,7 +26,7 @@ BoardManager::RequestNewHandler(BoardInstance inst,
 int main(int argc, char **argv)
 {
     sptr<RosModule> frontend = std::make_shared<RosModule>();
-    frontend->Init(stringmap(), {});
+    frontend->Init(0, nullptr);
 
     BoardManager::inst().frontend = frontend;
 

@@ -16,7 +16,8 @@ class RubiFrontend
 
     virtual ~RubiFrontend() = default;
 
-    virtual bool Init(stringmap args, std::vector<std::string> cans_names) = 0;
+    virtual bool Init(int argc, char **argv) = 0;
+    virtual std::vector<std::string> GetCansNames() = 0;
     virtual void Spin() = 0;
 
     virtual void LogInfo(std::string msg) = 0;
