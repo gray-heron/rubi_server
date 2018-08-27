@@ -18,14 +18,25 @@ void BoardManager::Init(std::vector<std::string> cans_names)
 void BoardManager::Spin(std::chrono::system_clock::time_point time)
 {
     std::vector<float> utilization;
+    bool dump_traffic_load = false;
+
+    if (std::chrono::duration_cast<std::chrono::seconds>(time - last_keepalive)
+            .count() >= cans_load_collection_time)
+    {
+        last_keepalive = time;
+        dump_traffic_load = true;
+    }
 
     for (const auto &can_entry : cans)
     {
         can_entry.second->Tick(time);
-        utilization.push_back(can_entry.second->GetTrafficSoFar(true));
+        if (dump_traffic_load)
+            utilization.push_back(can_entry.second->GetTrafficSoFar(true) /
+                                  cans_load_collection_time);
     }
 
-    frontend->ReportCansUtilization(utilization);
+    if (dump_traffic_load)
+        frontend->ReportCansUtilization(utilization);
 }
 
 void BoardManager::RegisterNewHandler(

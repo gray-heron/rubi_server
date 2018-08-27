@@ -33,6 +33,10 @@ class BoardManager
     std::vector<std::pair<std::string, sptr<CanHandler>>> cans;
     std::set<sptr<BoardCommunicationHandler>> holden_handlers;
 
+    std::chrono::system_clock::time_point last_keepalive;
+
+    float cans_load_collection_time = 3.0;
+
   private:
     BoardManager();
 

@@ -157,7 +157,7 @@ FFDescriptor::BuildDescriptor(int ffid, int msg_type, std::string value)
 
 std::string BoardDescriptor::GetBoardPrefix(boost::optional<int> id)
 {
-    std::string ret = std::string("rubi/boards/") + board_name + "/";
+    std::string ret = std::string("/rubi/boards/") + board_name + "/";
     if (id.is_initialized())
         ret += std::to_string(id.get()) + "/";
 
