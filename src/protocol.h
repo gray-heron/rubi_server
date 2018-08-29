@@ -3,7 +3,9 @@
 #include <inttypes.h>
 #include <memory>
 
+#include "board.h"
 #include "communication.h"
+#include "logger.h"
 #include "protocol_defs.h"
 #include "socketcan.h"
 
@@ -60,6 +62,8 @@ class ProtocolHandler
     void rubi_inbound(CanRxMsg rx);
     void rubi_data_outwrapper(uint8_t msg_id, uint8_t id, uint8_t *data,
                               uint8_t datasize);
+
+    Logger log{"Protocol"};
 
   public:
     ProtocolHandler(BoardCommunicationHandler *_board_handler,

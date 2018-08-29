@@ -11,10 +11,8 @@
 #include <vector>
 
 #include "commons.h"
-#include "communication.h"
 #include "descriptors.h"
 #include "frontend.h"
-#include "protocol.h"
 
 // this singleton is not beautiful
 class BoardManager
@@ -39,6 +37,8 @@ class BoardManager
 
   private:
     BoardManager();
+
+    Logger log{"BoardManager"};
 
   public:
     BoardManager(BoardManager const &) = delete;

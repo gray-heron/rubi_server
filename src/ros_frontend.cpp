@@ -314,7 +314,7 @@ bool RosModule::Init(int argc, char **argv)
     }
     else
     {
-        LogWarning("No can interfaces given! Assuming its can0.");
+        log.Warning("No can interfaces given! Assuming its can0.");
         cans_names = {"can0"};
     }
 
@@ -414,8 +414,8 @@ std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
     }
 
     ros_stuff->board_announcer.publish(msg);
-    LogInfo("Frontend registered new board type: " +
-            inst.descriptor->board_name);
+    log.Info("Frontend registered new board type: " +
+             inst.descriptor->board_name);
 
     return std::shared_ptr<FrontendBoardHandler>(ret);
 }

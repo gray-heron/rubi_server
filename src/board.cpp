@@ -92,9 +92,8 @@ void BoardManager::RegisterNewHandler(
     {
         if (old_backend_handler->IsDead())
         {
-            BoardManager::inst().frontend->LogInfo(
-                string("Replacing dead handler for board ") +
-                (string)old_backend_handler->GetBoard());
+            log.Info(string("Replacing dead handler for board ") +
+                     (string)old_backend_handler->GetBoard());
 
             BoardManager::inst()
                 .handlers[board_descriptor][i - handlers_bank->second.begin()]
@@ -111,11 +110,10 @@ void BoardManager::RegisterNewHandler(
         }
         else
         {
-            BoardManager::inst().frontend->LogWarning(
-                string("Handler for ") +
-                (string)old_backend_handler->GetBoard() +
-                " already exists. Putting new "
-                "connection on hold.");
+            log.Warning(string("Handler for ") +
+                        (string)old_backend_handler->GetBoard() +
+                        " already exists. Putting new "
+                        "connection on hold.");
 
             holden_handlers.insert(new_backend_handler);
         }
@@ -172,9 +170,8 @@ BoardManager::RequestNewHandler(BoardInstance inst,
             board_inst.backend_handler = new_handler;
             new_handler->Launch(frontend);
 
-            BoardManager::inst().frontend->LogInfo(
-                "Replacing dead handler for board " +
-                (string)old_handler->GetBoard());
+            log.Info("Replacing dead handler for board " +
+                     (string)old_handler->GetBoard());
 
             break;
         }
@@ -184,9 +181,9 @@ BoardManager::RequestNewHandler(BoardInstance inst,
     {
         old_handler->Hold();
         holden_handlers.insert(old_handler);
-        BoardManager::inst().frontend->LogWarning(
-            "Putting active handler for board " +
-            (string)old_handler->GetBoard() + " on hold on replacement.");
+        log.Warning("Putting active handler for board " +
+                    (string)old_handler->GetBoard() +
+                    " on hold on replacement.");
     }
 
     return new_handler;

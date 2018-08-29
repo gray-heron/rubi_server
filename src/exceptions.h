@@ -37,7 +37,7 @@ class AssertionFailedException : RubiException
             rubi_msg += msg + " (" + std::string(file) + ":" +
                         std::to_string(line) + ")";
 
-        BoardManager::inst().frontend->LogError(rubi_msg);
+        Logger("Exception").Error(rubi_msg);
     }
 };
 

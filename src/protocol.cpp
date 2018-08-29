@@ -30,8 +30,9 @@ void ProtocolHandler::rubi_inbound(CanRxMsg rx)
 
             if (rx.Data[0] & RUBI_FLAG_BLOCK_TRANSFER)
             {
-                if(rx.Data[2] != blocks_received){
-                    BoardManager::inst().frontend->LogWarning("Block transfer has failed.");
+                if (rx.Data[2] != blocks_received)
+                {
+                    log.Warning("Block transfer has failed.");
                     transfer_failed = true;
                 }
 
@@ -41,7 +42,7 @@ void ProtocolHandler::rubi_inbound(CanRxMsg rx)
                 blocks_received = 0;
             }
 
-            if(!transfer_failed)
+            if (!transfer_failed)
                 rubi_data_outwrapper(rx.Data[0] & MSG_MASK, rx.Data[1],
                                      potential_data_ptr, data_size);
         }
@@ -246,12 +247,12 @@ void ProtocolHandler::rubi_continue_tx()
 
         if (block_transfer && rubi_tx_current_header.data_len != 0)
         {
-            uint32_t data_size = std::min(7, (int)rubi_tx_current_header.data_len);
+            uint32_t data_size =
+                std::min(7, (int)rubi_tx_current_header.data_len);
             data[0] = RUBI_MSG_BLOCK;
             memcpy((void *)&data[1], rubi_get_tx_chunk(data_size), data_size);
 
-            can_send_array(rubi_tx_current_header.cob, data_size + 1,
-                                  data);
+            can_send_array(rubi_tx_current_header.cob, data_size + 1, data);
 
             if (rubi_tx_cursor_low == -1)
                 rubi_tx_cursor_low = rubi_tx_cursor_high;
@@ -278,10 +279,9 @@ void ProtocolHandler::rubi_continue_tx()
                 memcpy(data + 2,
                        rubi_get_tx_chunk(rubi_tx_current_header.data_len),
                        rubi_tx_current_header.data_len);
-                can_send_array(rubi_tx_current_header.cob, rubi_tx_current_header.data_len + 2,
-                    data);
+                can_send_array(rubi_tx_current_header.cob,
+                               rubi_tx_current_header.data_len + 2, data);
             }
-
 
             if (rubi_tx_cursor_low == -1 && rubi_tx_current_header.data_len > 0)
             {

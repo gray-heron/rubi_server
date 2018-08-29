@@ -69,7 +69,7 @@ void BoardCommunicationHandler::ErrorInbound(int error_type,
         error_msg = "An unknown error has occured on board " + (string)inst;
     }
 
-    BoardManager::inst().frontend->LogError(error_msg);
+    log.Error(error_msg);
 }
 
 void BoardCommunicationHandler::CommandInbound(int command_id,
@@ -90,14 +90,12 @@ void BoardCommunicationHandler::KeepAliveRequest()
         keep_alives_missed += 1;
         lost = true;
 
-        BoardManager::inst().frontend->LogWarning(
-            "Didn't receive keep-alive from " + (string)inst + "!");
+        log.Warning("Didn't receive keep-alive from " + (string)inst + "!");
 
         if (keep_alives_missed == 5)
         {
             dead = true;
-            BoardManager::inst().frontend->LogError("Board " + (string)inst +
-                                                    " is now considered dead!");
+            log.Error("Board " + (string)inst + " is now considered dead!");
         }
     }
     keep_alive_received = false;
@@ -141,8 +139,7 @@ void BoardCommunicationHandler::CommandReboot()
 {
     dead = true;
     protocol->SendCommand(RUBI_COMMAND_REBOOT, {});
-    BoardManager::inst().frontend->LogInfo("Board " + (string)inst +
-                                           " ordered was ordered a reboot!");
+    log.Info("Board " + (string)inst + " ordered was ordered a reboot!");
 }
 
 void BoardCommunicationHandler::HandshakeComplete()
@@ -159,13 +156,11 @@ void BoardCommunicationHandler::HandshakeComplete()
         if (*BoardManager::inst().descriptor_map[board_name] !=
             *inst.descriptor)
         {
-            BoardManager::inst().frontend->LogError(
-                (std::string) "Descriptor conflict for board + " + board_name +
-                "!");
+            log.Error((std::string) "Descriptor conflict for board + " +
+                      board_name + "!");
             ASSERT(0);
         }
     }
 
-    BoardManager::inst().frontend->LogInfo("Handshake complete for board " +
-                                           board_name + "!");
+    log.Info("Handshake complete for board " + board_name + "!");
 }

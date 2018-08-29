@@ -115,8 +115,7 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
         }
         else
         {
-            BoardManager::inst().frontend->LogWarning(
-                "Unknown message received.");
+            log.Warning("Unknown message received.");
         }
     }
 }

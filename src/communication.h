@@ -18,6 +18,7 @@ class CommunicationFaker;
 #include "board.h"
 #include "descriptors.h"
 #include "frontend.h"
+#include "logger.h"
 #include "protocol.h"
 #include "socketcan.h"
 
@@ -39,6 +40,8 @@ class CanHandler
     uint8_t NewBoard(uint16_t lottery_id);
 
     std::chrono::system_clock::time_point last_keepalive;
+
+    Logger log{"CanHandler"};
 
   public:
     CanHandler(std::string can_name);
@@ -62,8 +65,9 @@ class BoardCommunicationHandler
     CanHandler *can_handler;
 
     sptr<FrontendBoardHandler> frontend;
-
     BoardInstance inst;
+
+    Logger log{"CommunicationHandler"};
 
   public:
     void Launch(sptr<FrontendBoardHandler> _frontend);

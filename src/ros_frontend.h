@@ -23,6 +23,8 @@ class RosModule : public RubiFrontend
     std::vector<sptr<RosBoardHandler>> boards;
     std::vector<std::string> cans_names;
 
+    Logger log{"RosModule"};
+
   public:
     RosModule();
     RosModule(RosModule const &) = delete;
@@ -59,6 +61,8 @@ class RosBoardHandler : public FrontendBoardHandler,
 
     std::vector<int> fieldtable;
     std::vector<std::pair<fftype_t, int>> fftable;
+
+    Logger log{"RosBoardHandler"};
 
   public:
     sptr<BoardCommunicationHandler> BackendReady();

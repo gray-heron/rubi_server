@@ -1,11 +1,11 @@
 #include <memory>
 
 #include "board.h"
+#include "exceptions.h"
 #include "fake_communication.h"
 #include "frontend.h"
 #include "protocol_defs.h"
 #include "rubi_autodefs.h"
-#include "exceptions.h"
 
 #include <thread>
 
@@ -86,7 +86,7 @@ void BoardCommunicationHandler::FFDataOutbound(
 
     msg = msg.substr(0, msg.size() - 1);
 
-    BoardManager::inst().frontend->LogInfo(msg);
+    log.Info(msg);
 };
 
 BoardCommunicationHandler::BoardCommunicationHandler(CanHandler *can_handler,
@@ -96,6 +96,4 @@ BoardCommunicationHandler::BoardCommunicationHandler(CanHandler *can_handler,
 
 CommunicationFaker::CommunicationFaker() {}
 
-void BoardCommunicationHandler::CommandReboot() {
-    ASSERT(0);
-}
+void BoardCommunicationHandler::CommandReboot() { ASSERT(0); }
