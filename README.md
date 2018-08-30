@@ -31,10 +31,19 @@ RUBI consists of four components:
 
 ## Hardware
 
-Currently, it is easy to make rubi_emedded work on any STM32F1 and STM32F3 microcontroller (provided it is equipped with a CAN bus). It was tested on:
-| the customly designed logic board with STM32F303RC | off the shelf OLIMEXINO-STM32 with STM32F103RB |
-| :-: |:-: |
-| ![alt text](doc/uwr.jpg "A universal board designed in our Institute") | ![alt text](doc/olimex.jpg "Off the shelf, Arduino-compatible OLIMEX board") |
+Currently, it is easy to make rubi_emedded work on any STM32F1 and STM32F3 microcontroller (provided it is equipped with a CAN bus). It was tested on the:
+
+<table>
+    <tr>
+        <th> customly designed logic board with STM32F303RC </th>
+        <th> off the shelf OLIMEXINO-STM32 with STM32F103RB </th>
+    </tr>
+    <tr>
+        <td> <img src="doc/uwr.jpg"/ height="81.5%"> </td>
+        <td> <img src="doc/olimex.jpg" /> </td>
+    </tr>
+</table>
+
 
 As of hardware for the rubi_server, it runs on a Linux-based machine with a ROS installation, a CAN transceiver and a socketcan implementation for it. It is also possible to tunnel the CAN traffic over Ethernet with tools like cannelloni, but it is discouraged for purposes other than prototyping or debugging.
 
