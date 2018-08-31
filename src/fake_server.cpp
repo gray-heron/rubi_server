@@ -25,11 +25,17 @@ BoardManager::RequestNewHandler(BoardInstance inst,
 
 int main(int argc, char **argv)
 {
-    sptr<RosModule> frontend = std::make_shared<RosModule>();
-    frontend->Init(0, nullptr);
+// required for the ROS' arguments jugglery
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+    char *fake_args[] = {
+        "/", "_cans:=can0,can1",
+    };
+#pragma GCC diagnostic pop
 
+    sptr<RosModule> frontend = std::make_shared<RosModule>();
     BoardManager::inst().frontend = frontend;
 
+    frontend->Init(2, fake_args);
     CommunicationFaker faker;
 
     vector<sptr<BoardCommunicationHandler>> publishers;
@@ -115,6 +121,10 @@ int main(int argc, char **argv)
     for (int iter = 0;; iter++)
     {
         frontend->Spin();
+        if (!(iter++ % 100))
+            frontend->ReportCansUtilization(
+                {0.0300009791f + float(iter), 125001.1f + float(iter)});
+
         for (auto pub : publishers)
         {
             vector<uint8_t> data;
