@@ -14,7 +14,7 @@ In this model, most of the robot functions (like sensor polling or the motor con
 - when a new board was added, a new communication layer had to be carefully designed to avoid conflicts with the previous configuration,
 - when a new board was added, the code for all major robot’s components had to be modified (you have to touch the code of the board, the main computer, and the control station),
 - many of the logic boards need a very simple user interface, for example, the drill controller had four buttons and the power monitor displayed two integers,
-- writing a separate control program for each board discouraged implementing universal functions like the QoS of the bus, board remote reboot, emergency shutdown of the system, hot-plug, etc.
+- writing a separate control program for each board discouraged implementing universal functions like the QoS of the bus, board remote reboot, emergency shutdown of the system, hot-plug etc.
 
 To address these downsides, RUBI is designed so that in most cases, a new board is integrated to the system by specifying its capabilities in the microcontroller code with the provided API and simply plugging the board into one of the RUBI-controlled CAN buses.
 
@@ -31,7 +31,7 @@ RUBI consists of four components:
 
 ## Hardware
 
-Currently, it is easy to make rubi_emedded work on any STM32F1 and STM32F3 microcontroller (provided it is equipped with a CAN bus). It was tested on the:
+Currently, it is easy to make rubi_client work on any STM32F1 or STM32F3 microcontroller (provided it is equipped with a CAN bus). It was tested on the:
 
 <table>
     <tr>
