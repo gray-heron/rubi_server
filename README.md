@@ -39,8 +39,8 @@ Currently, it is easy to make rubi_client work on any STM32F1 or STM32F3 microco
         <th> off the shelf OLIMEXINO-STM32 with STM32F103RB </th>
     </tr>
     <tr>
-        <td> <img src="doc/uwr.jpg"/ height="81.5%"> </td>
-        <td> <img src="doc/olimex.jpg" /> </td>
+        <td> <img src="doc/uwr.jpg" width="81.5%" /> </td>
+        <td> <img src="doc/olimex.jpg" width="100.5%" /> </td>
     </tr>
 </table>
 
