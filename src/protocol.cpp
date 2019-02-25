@@ -22,7 +22,7 @@ void ProtocolHandler::rubi_inbound(CanRxMsg rx)
         uint8_t *potential_data_ptr = &rx.Data[2], data_size;
         ASSERT(rx.DLC >= 1);
 
-        if ((rx.Data[0] & MSG_MASK) != RUBI_MSG_BLOCK)
+        if ((rx.Data[0] & RUBI_MSG_MASK) != RUBI_MSG_BLOCK)
         {
             bool transfer_failed = false;
             ASSERT(rx.DLC >= 2);
@@ -43,7 +43,7 @@ void ProtocolHandler::rubi_inbound(CanRxMsg rx)
             }
 
             if (!transfer_failed)
-                rubi_data_outwrapper(rx.Data[0] & MSG_MASK, rx.Data[1],
+                rubi_data_outwrapper(rx.Data[0] & RUBI_MSG_MASK, rx.Data[1],
                                      potential_data_ptr, data_size);
         }
         else
@@ -87,8 +87,8 @@ void ProtocolHandler::rubi_data_outwrapper(uint8_t msg_id, uint8_t id,
         board_handler->DescriptionDataInbound(id, vdata);
         break;
 
-    case RUBI_MSG_ERROR:
-        board_handler->ErrorInbound(id, vdata);
+    case RUBI_MSG_EVENT:
+        board_handler->EventInbound(id, vdata);
         break;
 
     case RUBI_MSG_COMMAND:

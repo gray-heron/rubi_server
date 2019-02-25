@@ -137,13 +137,13 @@ include_directories(
 add_executable(rubi_server
   src/board.cpp src/communication.cpp src/can_handler.cpp src/descriptors.cpp
   src/main.cpp src/protocol.cpp src/ros_frontend.cpp
-  src/rubi_autodefs.cpp src/socketcan.cpp src/commons.cpp
+  src/rubi_autodefs.cpp src/socketcan.cpp
   src/logger.cpp)
 
 add_executable(rubi_fake_server
   src/fake_communication.cpp src/descriptors.cpp
   src/fake_server.cpp src/ros_frontend.cpp src/rubi_autodefs.cpp
-  src/commons.cpp src/logger.cpp)
+  src/logger.cpp)
 
 add_dependencies(rubi_server rubi_server_generate_messages_cpp)
 add_dependencies(rubi_fake_server rubi_server_generate_messages_cpp)

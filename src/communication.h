@@ -60,7 +60,7 @@ class BoardCommunicationHandler
     int keep_alives_missed;
     int received_descriptors;
 
-    bool dead, lost, operational, addressed, keep_alive_received;
+    bool dead, lost, operational, addressed, keep_alive_received, wake;
     std::unique_ptr<ProtocolHandler> protocol;
     CanHandler *can_handler;
 
@@ -78,6 +78,7 @@ class BoardCommunicationHandler
 
     bool IsDead();
     bool IsLost();
+    bool IsWake();
 
     void CommandReboot();
     void CommandWake();
@@ -87,7 +88,7 @@ class BoardCommunicationHandler
     sptr<FrontendBoardHandler> GetFrontendHandler();
 
     void DescriptionDataInbound(int desc_type, std::vector<uint8_t> &data);
-    void ErrorInbound(int error_id, std::vector<uint8_t> &data);
+    void EventInbound(int error_id, std::vector<uint8_t> &data);
     void CommandInbound(int command_id, std::vector<uint8_t> &data);
 
     void FFDataInbound(int ffid, std::vector<uint8_t> &data);

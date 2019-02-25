@@ -282,7 +282,11 @@ void InboundFieldCallbackString(std::shared_ptr<RosBoardHandler> handler,
 void BoardWakeCallback(std::shared_ptr<RosBoardHandler> handler,
                        const std_msgs::Empty::ConstPtr &data)
 {
-    ASSERT(0);
+    auto backend_handler = handler->BackendReady();
+    if (!backend_handler)
+        return;
+
+    backend_handler->CommandWake();
 }
 
 void BoardRebootCallback(std::shared_ptr<RosBoardHandler> handler,
@@ -298,7 +302,11 @@ void BoardRebootCallback(std::shared_ptr<RosBoardHandler> handler,
 void BoardSleepCallback(std::shared_ptr<RosBoardHandler> handler,
                         const std_msgs::Empty::ConstPtr &data)
 {
-    ASSERT(0);
+    auto backend_handler = handler->BackendReady();
+    if (!backend_handler)
+        return;
+
+    backend_handler->CommandSleep();
 }
 
 bool RosModule::Init(int argc, char **argv)
@@ -344,7 +352,7 @@ bool RosModule::Init(int argc, char **argv)
     ros_stuff->panic_subscriber = ros_stuff->n->subscribe<std_msgs::Empty>(
         "/rubi/panic", 1, PanicHandler);
 
-    // WHY ON EARTH AUTO'S STD::FUNC INFERENCE IS BROKEN?@!
+    // std::func inference seems broken
     boost::function<bool(rubi_server::CansNames::Request &,
                          rubi_server::CansNames::Response &)>
         cans_names_callback =

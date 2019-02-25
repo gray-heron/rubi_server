@@ -1,32 +1,34 @@
 #include <memory>
 
 #include "board.h"
-#include "commons.h"
 #include "communication.h"
 #include "exceptions.h"
 #include "frontend.h"
 #include "protocol_defs.h"
+#include "types.h"
 
 #include <thread>
 
-using std::string;
 using std::get;
+using std::string;
 
 BoardInstance BoardCommunicationHandler::GetBoard() { return inst; }
 
 bool BoardCommunicationHandler::IsDead() { return dead; }
 bool BoardCommunicationHandler::IsLost() { return lost; }
+bool BoardCommunicationHandler::IsWake() { return wake; }
 
 void BoardCommunicationHandler::FFDataOutbound(
     std::shared_ptr<FFDescriptor> desc, std::vector<uint8_t> &data)
 {
-    protocol->SendFFData(desc->ffid, desc->GetFFType(), data);
+    if (IsWake())
+        protocol->SendFFData(desc->ffid, desc->GetFFType(), data);
 }
 
 BoardCommunicationHandler::BoardCommunicationHandler(CanHandler *can_handler,
                                                      uint8_t board_nodeid)
     : can_handler(can_handler), dead(false), addressed(false),
-      operational(false), lost(false), keep_alives_missed(0),
+      operational(false), lost(false), wake(false), keep_alives_missed(0),
       keep_alive_received(true), received_descriptors(0)
 {
     protocol = std::unique_ptr<ProtocolHandler>(
@@ -47,29 +49,65 @@ void BoardCommunicationHandler::DescriptionDataInbound(
     inst.descriptor->ApplyInfo(desc_type, value);
 }
 
-void BoardCommunicationHandler::ErrorInbound(int error_type,
+void BoardCommunicationHandler::EventInbound(int error_type,
                                              std::vector<uint8_t> &data)
 {
-    string error_msg;
-
+    string msg;
     switch (error_type)
     {
-    case RUBI_ERROR_ASSERT:
-        error_msg = "An assertion has fired on board " + (std::string)inst +
-                    " in file ";
+    case RUBI_EVENT_FATAL_ERROR:
+        ASSERT(data.size() > 5);
 
-        for (unsigned int i = 4; i < data.size(); i++)
-            error_msg += (char)data[i];
+        switch (data[0])
+        {
+        case RUBI_ERROR_ASSERT:
+            msg = "An assertion has fired on board " + (std::string)inst +
+                  " in file ";
 
-        error_msg += std::string(" at line ") +
-                     std::to_string(*((int32_t *)data.data()));
+            for (unsigned int i = 5; i < data.size(); i++)
+                msg += (char)data[i];
 
+            msg += std::string(" at line ") +
+                   std::to_string(*((int32_t *)(data.data() + 1)));
+            break;
+        case RUBI_ERROR_USER:
+            msg = "A fatal user error has occured on board " + (string)inst +
+                  ": " + std::string((char *)data.data() + 1);
+        }
+
+        log.Error(msg);
         break;
-    default:
-        error_msg = "An unknown error has occured on board " + (string)inst;
-    }
 
-    log.Error(error_msg);
+    case RUBI_EVENT_INFO:
+        ASSERT(data.size() > 1);
+
+        msg = "Info from board " + (std::string)inst + ": ";
+        msg += std::string((char *)data.data() + 1);
+
+        log.Info(msg);
+        break;
+
+    case RUBI_EVENT_WARNING:
+        ASSERT(data.size() > 1);
+
+        msg = "Info from board " + (std::string)inst + ": ";
+        msg += std::string((char *)data.data() + 1);
+
+        log.Warning(msg);
+        break;
+
+    case RUBI_EVENT_ERROR:
+        ASSERT(data.size() > 1);
+
+        msg = "Info from board " + (std::string)inst + ": ";
+        msg += std::string((char *)data.data() + 1);
+
+        log.Error(msg);
+        break;
+
+    default:
+        ASSERT(false);
+    }
 }
 
 void BoardCommunicationHandler::CommandInbound(int command_id,
@@ -77,6 +115,9 @@ void BoardCommunicationHandler::CommandInbound(int command_id,
 {
     ASSERT(command_id == RUBI_COMMAND_KEEPALIVE);
     // TODO keep-alive id
+
+    ASSERT(data.size() == 1);
+    wake = data[0];
 
     keep_alive_received = true;
     lost = false;
@@ -112,7 +153,7 @@ void BoardCommunicationHandler::FFDataInbound(int ffid,
 
 void BoardCommunicationHandler::ConfirmAddress()
 {
-    ASSERT(!addressed);
+    ASSERT(!addressed, "Address assignment has failed!");
     inst = BoardInstance(shared_from_this());
     // FIXME: behaviour in case of address conflict
 
@@ -139,7 +180,19 @@ void BoardCommunicationHandler::CommandReboot()
 {
     dead = true;
     protocol->SendCommand(RUBI_COMMAND_REBOOT, {});
-    log.Info("Board " + (string)inst + " ordered was ordered a reboot!");
+    log.Info("Board " + (string)inst + " was ordered a reboot!");
+}
+
+void BoardCommunicationHandler::CommandSleep()
+{
+    protocol->SendCommand(RUBI_COMMAND_SOFTSLEEP, {});
+    log.Info("Board " + (string)inst + " ordered to go sleeping!");
+}
+
+void BoardCommunicationHandler::CommandWake()
+{
+    protocol->SendCommand(RUBI_COMMAND_WAKE, {});
+    log.Info("Board " + (string)inst + " was ordered to wake up!");
 }
 
 void BoardCommunicationHandler::HandshakeComplete()

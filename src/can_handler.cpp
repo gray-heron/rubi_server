@@ -2,16 +2,16 @@
 #include <memory>
 
 #include "board.h"
-#include "commons.h"
 #include "communication.h"
 #include "exceptions.h"
 #include "frontend.h"
 #include "protocol_defs.h"
+#include "types.h"
 
 #include <thread>
 
-using std::string;
 using std::get;
+using std::string;
 
 CanHandler::CanHandler(std::string can_name)
 {
@@ -65,21 +65,20 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
         last_keepalive = time;
     }
 
-    std::vector<std::tuple<uint16_t, bytes_t, timeval>> msgs;
-    for (auto msg = socketcan->can_receive(1); msg;
-         msg = socketcan->can_receive(1))
+    while (auto msg = socketcan->can_receive(1))
     {
-        msgs.push_back(msg.get());
-    }
-
-    for (const auto &rx : msgs)
-    {
-        // printf("%ld\t%d\n", std::get<2>(rx).tv_usec, std::get<1>(rx).size());
+        auto rx = *msg;
 
         if (std::get<0>(rx) >= RUBI_LOTTERY_RANGE_LOW &&
             std::get<0>(rx) <= RUBI_LOTTERY_RANGE_HIGH)
         {
-            NewBoard(std::get<0>(rx) - RUBI_LOTTERY_RANGE_LOW);
+            if (std::get<1>(rx).size() == 2 &&
+                *(reinterpret_cast<uint16_t *>(std::get<1>(rx).data())) ==
+                    RUBI_PROTOCOL_VERSION)
+                NewBoard(std::get<0>(rx) - RUBI_LOTTERY_RANGE_LOW);
+            else
+                log.Error(
+                    "Board with outdated protocol version found on the bus!");
         }
         else if (std::get<0>(rx) >= RUBI_ADDRESS_RANGE1_LOW &&
                  std::get<0>(rx) <= RUBI_ADDRESS_RANGE1_HIGH)
@@ -90,7 +89,7 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
             ASSERT(address_pool[id] != boost::none);
             ASSERT(!(*address_pool[id])->IsDead());
 
-            switch (std::get<1>(rx)[0] & MSG_MASK)
+            switch (std::get<1>(rx)[0] & RUBI_MSG_MASK)
             {
             case RUBI_MSG_LOTTERY:
                 (*address_pool[id])->ConfirmAddress();
@@ -99,7 +98,7 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
             case RUBI_MSG_FUNCTION:
             case RUBI_MSG_INFO:
             case RUBI_MSG_BLOCK:
-            case RUBI_MSG_ERROR:
+            case RUBI_MSG_EVENT:
             case RUBI_MSG_COMMAND:
                 (*address_pool[id])
                     ->protocol->InboundWrapper(

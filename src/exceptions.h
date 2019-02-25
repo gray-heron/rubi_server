@@ -5,10 +5,9 @@
 #include <string>
 
 #include "board.h"
-#include "commons.h"
 
-#define ASSERT(x, ...)                                                         \
-    if (!(x))                                                                  \
+#define ASSERT(x, ...) \
+    if (!(x))          \
         throw AssertionFailedException(__FILE__, __LINE__, #__VA_ARGS__);
 
 class RubiException : public std::exception

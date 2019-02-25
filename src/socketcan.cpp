@@ -6,9 +6,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "commons.h"
 #include "exceptions.h"
 #include "socketcan.h"
+#include "types.h"
 
 // TODO: Clean this up
 

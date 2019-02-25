@@ -9,11 +9,12 @@
 
 #include <thread>
 
-using std::string;
 using std::get;
+using std::string;
 
 bool BoardCommunicationHandler::IsDead() { return false; }
 bool BoardCommunicationHandler::IsLost() { return false; }
+bool BoardCommunicationHandler::IsWake() { return true; }
 
 sptr<BoardCommunicationHandler>
 CommunicationFaker::FakeBoard(std::string board_name,
@@ -97,3 +98,5 @@ BoardCommunicationHandler::BoardCommunicationHandler(CanHandler *can_handler,
 CommunicationFaker::CommunicationFaker() {}
 
 void BoardCommunicationHandler::CommandReboot() { ASSERT(0); }
+void BoardCommunicationHandler::CommandSleep() { wake = false; }
+void BoardCommunicationHandler::CommandWake() { wake = true; }
