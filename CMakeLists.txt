@@ -67,6 +67,7 @@ add_service_files(
   BoardDescriptor.srv
   ShowBoards.srv
   BoardOnline.srv
+  BoardWake.srv
 )
 
 ## Generate actions in the 'action' folder

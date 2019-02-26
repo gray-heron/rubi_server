@@ -9,6 +9,7 @@
 #include <rubi_server/ShowBoards.h>
 
 #include <rubi_server/BoardOnline.h>
+#include <rubi_server/BoardWake.h>
 #include <rubi_server/CansNames.h>
 #include <rubi_server/RubiBool.h>
 #include <rubi_server/RubiFloat.h>
@@ -53,6 +54,7 @@ struct RosBoardHandler::roshandler_stuff_t
     ros::Subscriber sleep_subscriber;
     ros::Subscriber wake_subscriber;
     ros::ServiceServer board_online;
+    ros::ServiceServer board_wake;
 };
 
 RosModule::RosModule() { ros_stuff = new ros_stuff_t; }
@@ -165,6 +167,23 @@ bool BoardOnlineHandler(std::shared_ptr<RosBoardHandler> handler,
     else
     {
         res.online = !backend_handler->IsLost() && !backend_handler->IsDead();
+    }
+
+    return true;
+}
+
+bool BoardWakeHandler(std::shared_ptr<RosBoardHandler> handler,
+                      rubi_server::BoardWake::Request &req,
+                      rubi_server::BoardWake::Response &res)
+{
+    auto backend_handler = handler->BackendReady();
+    if (!backend_handler)
+    {
+        res.wake = false;
+    }
+    else
+    {
+        res.wake = backend_handler->IsWake();
     }
 
     return true;
@@ -451,12 +470,17 @@ void RosBoardHandler::Init()
     auto reboot_callback = std::bind(BoardRebootCallback, shared_from_this(),
                                      std::placeholders::_1);
 
-    // WHY ON EARTH AUTO'S STD::FUNC INFERENCE IS BROKEN?@!
+    // std::func inference seems broken
     boost::function<bool(rubi_server::BoardOnline::Request &,
                          rubi_server::BoardOnline::Response &)>
-        online_callback =
+        online_handler =
             std::bind(BoardOnlineHandler, shared_from_this(),
                       std::placeholders::_1, std::placeholders::_2);
+
+    boost::function<bool(rubi_server::BoardWake::Request &,
+                         rubi_server::BoardWake::Response &)>
+        wake_handler = std::bind(BoardWakeHandler, shared_from_this(),
+                                 std::placeholders::_1, std::placeholders::_2);
 
     ros_stuff->wake_subscriber = n.subscribe<std_msgs::Empty>(
         board.descriptor->GetBoardPrefix(id) + "wake", 1, wake_callback);
@@ -464,8 +488,11 @@ void RosBoardHandler::Init()
         board.descriptor->GetBoardPrefix(id) + "sleep", 1, sleep_callback);
     ros_stuff->reboot_subscriber = n.subscribe<std_msgs::Empty>(
         board.descriptor->GetBoardPrefix(id) + "reboot", 1, reboot_callback);
+
     ros_stuff->board_online = n.advertiseService(
-        board.descriptor->GetBoardPrefix(id) + "online", online_callback);
+        board.descriptor->GetBoardPrefix(id) + "is_online", online_handler);
+    ros_stuff->board_wake = n.advertiseService(
+        board.descriptor->GetBoardPrefix(id) + "is_wake", wake_handler);
 
     for (const auto &ff : board.descriptor->fieldfunctions)
     {
