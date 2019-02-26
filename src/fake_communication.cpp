@@ -14,7 +14,7 @@ using std::string;
 
 bool BoardCommunicationHandler::IsDead() { return false; }
 bool BoardCommunicationHandler::IsLost() { return false; }
-bool BoardCommunicationHandler::IsWake() { return true; }
+bool BoardCommunicationHandler::IsWake() { return wake; }
 
 sptr<BoardCommunicationHandler>
 CommunicationFaker::FakeBoard(std::string board_name,
