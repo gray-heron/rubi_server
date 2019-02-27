@@ -72,9 +72,10 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
         if (std::get<0>(rx) >= RUBI_LOTTERY_RANGE_LOW &&
             std::get<0>(rx) <= RUBI_LOTTERY_RANGE_HIGH)
         {
-            if (std::get<1>(rx).size() == 2 &&
-                *(reinterpret_cast<uint16_t *>(std::get<1>(rx).data())) ==
-                    RUBI_PROTOCOL_VERSION)
+            uint16_t version_reported =
+                *(reinterpret_cast<uint16_t *>(std::get<1>(rx).data() + 2));
+            if (std::get<1>(rx).size() == 4 &&
+                version_reported == RUBI_PROTOCOL_VERSION)
                 NewBoard(std::get<0>(rx) - RUBI_LOTTERY_RANGE_LOW);
             else
                 log.Error(

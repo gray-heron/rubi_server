@@ -53,26 +53,28 @@ void BoardCommunicationHandler::EventInbound(int error_type,
                                              std::vector<uint8_t> &data)
 {
     string msg;
+    string error_msg;
+    uint32_t error_code;
+
     switch (error_type)
     {
     case RUBI_EVENT_FATAL_ERROR:
         ASSERT(data.size() > 5);
+        for (unsigned int i = 5; i < data.size(); i++)
+            error_msg += (char)data[i];
+
+        error_code = *((uint32_t *)(data.data() + 1));
 
         switch (data[0])
         {
         case RUBI_ERROR_ASSERT:
             msg = "An assertion has fired on board " + (std::string)inst +
-                  " in file ";
-
-            for (unsigned int i = 5; i < data.size(); i++)
-                msg += (char)data[i];
-
-            msg += std::string(" at line ") +
-                   std::to_string(*((int32_t *)(data.data() + 1)));
+                  " in file " + error_msg + " at line " +
+                  std::to_string(error_code);
             break;
         case RUBI_ERROR_USER:
             msg = "A fatal user error has occured on board " + (string)inst +
-                  ": " + std::string((char *)data.data() + 1);
+                  ": " + error_msg;
         }
 
         log.Error(msg);
