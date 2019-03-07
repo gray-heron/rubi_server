@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     frontend->Init(argc, argv);
     BoardManager::inst().Init(frontend->GetCansNames());
 
-    while (1)
+    while (!frontend->Quit())
     {
         auto time_now = std::chrono::system_clock::now();
         BoardManager::inst().Spin(time_now);

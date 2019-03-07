@@ -398,19 +398,16 @@ void RosModule::ReportCansUtilization(std::vector<float> util)
 void RosModule::LogInfo(string msg)
 {
     ROS_INFO("%s", msg.c_str());
-    ros::spinOnce();
 }
 
 void RosModule::LogWarning(string msg)
 {
     ROS_WARN("%s", msg.c_str());
-    ros::spinOnce();
 }
 
 void RosModule::LogError(string msg)
 {
     ROS_FATAL("%s", msg.c_str());
-    ros::spinOnce();
 }
 
 std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
@@ -746,6 +743,10 @@ void RosModule::Spin()
 {
     ros::spinOnce();
     ros_stuff->loop_rate->sleep();
+}
+
+bool RosModule::Quit(){
+    return !ros::ok();
 }
 
 int RosBoardHandler::GetFieldFfid(int field_id) { return fieldtable[field_id]; }

@@ -19,6 +19,7 @@ class RubiFrontend
     virtual bool Init(int argc, char **argv) = 0;
     virtual std::vector<std::string> GetCansNames() = 0;
     virtual void Spin() = 0;
+    virtual bool Quit() = 0;
 
     virtual void LogInfo(std::string msg) = 0;
     virtual void LogWarning(std::string msg) = 0;

@@ -31,9 +31,10 @@ class RosModule : public RubiFrontend
     void operator=(RosModule const &) = delete;
 
     bool Init(int argc, char **argv) override;
-    virtual std::vector<std::string> GetCansNames() override;
+    std::vector<std::string> GetCansNames() override;
 
     void Spin() override;
+    bool Quit() override;
 
     void LogInfo(std::string msg) override;
     void LogWarning(std::string msg) override;
