@@ -79,7 +79,7 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
                 NewBoard(std::get<0>(rx) - RUBI_LOTTERY_RANGE_LOW);
             else
                 log.Error(
-                    "Board with outdated/incompatible  protocol version found on the bus!");
+                    "Board with outdated/incompatible protocol version found on the bus!");
         }
         else if (std::get<0>(rx) >= RUBI_ADDRESS_RANGE1_LOW &&
                  std::get<0>(rx) <= RUBI_ADDRESS_RANGE1_HIGH)
