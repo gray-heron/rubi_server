@@ -6,7 +6,7 @@
 #include "exceptions.h"
 #include "frontend.h"
 #include "protocol_defs.h"
-#include "types.h"
+#include "types.h" <
 
 #include <thread>
 
@@ -78,8 +78,8 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
                 version_reported == RUBI_PROTOCOL_VERSION)
                 NewBoard(std::get<0>(rx) - RUBI_LOTTERY_RANGE_LOW);
             else
-                log.Error(
-                    "Board with outdated/incompatible protocol version found on the bus!");
+                log.Error("Board with outdated/incompatible  protocol version "
+                          "found on the bus!");
         }
         else if (std::get<0>(rx) >= RUBI_ADDRESS_RANGE1_LOW &&
                  std::get<0>(rx) <= RUBI_ADDRESS_RANGE1_HIGH)
@@ -89,7 +89,8 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
             ASSERT(std::get<1>(rx).size() >= 1);
             ASSERT(address_pool[id] != boost::none);
 
-            if((*address_pool[id])->IsDead()){
+            if ((*address_pool[id])->IsDead())
+            {
                 log.Error("Received message from board that should be dead!");
                 continue;
             }
