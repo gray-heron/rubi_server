@@ -82,10 +82,18 @@ int64_t InterpretInt(std::vector<uint8_t> &data, int typecode, int i)
     return 0;
 }
 
+float InterpretFloat(std::vector<uint8_t> &data, int typecode, int i)
+{
+    return *((float *)&data.data()[i]);
+}
+
+std::string InterpretString(std::vector<uint8_t> &data, int typecode, int i)
+{
+    return std::string((char *)data.data());
+}
+
 void DeinterpretInt(uint8_t *target, int64_t num, int typecode)
 {
-    std::vector<int> ret;
-
     switch (typecode)
     {
     case _RUBI_TYPECODES_int32_t:
@@ -109,6 +117,16 @@ void DeinterpretInt(uint8_t *target, int64_t num, int typecode)
     default:
         ASSERT(false);
     }
+}
+
+void DeinterpretFloat(uint8_t *target, float num, int typecode)
+{
+    *((float *)target) = num;
+}
+
+void DeinterpretShortString(uint8_t *target, std::string num, int typecode)
+{
+    strcpy((char *)target, num.c_str());
 }
 
 void PanicHandler(const std_msgs::Empty::ConstPtr &data) { ASSERT(0); }
@@ -255,10 +273,30 @@ void InboundFieldCallbackInt(std::shared_ptr<RosBoardHandler> handler,
 }
 
 void InboundFieldCallbackUnsignedInt(
-    std::shared_ptr<RosBoardHandler> handler, int func_id,
+    std::shared_ptr<RosBoardHandler> handler, int field_id,
     const rubi_server::RubiUnsignedInt::ConstPtr &data)
 {
-    ASSERT(0);
+    auto backend_handler = handler->BackendReady();
+    if (!backend_handler)
+        return;
+
+    std::vector<uint8_t> ffdata;
+
+    unsigned int ffid = handler->GetFieldFfid(field_id);
+    unsigned int element_size = rubi_type_size(
+        handler->board.descriptor->fieldfunctions[ffid]->typecode);
+    unsigned int datasize =
+        handler->board.descriptor->fieldfunctions[ffid]->GetFFSize();
+    ffdata.resize(datasize);
+    ASSERT(datasize / element_size == data->data.size());
+
+    for (unsigned int i = 0; i < data->data.size(); i++)
+        DeinterpretInt(
+            &ffdata.data()[i * element_size], data->data[i],
+            handler->board.descriptor->fieldfunctions[ffid]->typecode);
+
+    backend_handler->FFDataOutbound(
+        handler->board.descriptor->fieldfunctions[ffid], ffdata);
 }
 
 void InboundFieldCallbackBool(std::shared_ptr<RosBoardHandler> handler,
@@ -285,17 +323,57 @@ void InboundFieldCallbackBool(std::shared_ptr<RosBoardHandler> handler,
 }
 
 void InboundFieldCallbackFloat(std::shared_ptr<RosBoardHandler> handler,
-                               int func_id,
+                               int field_id,
                                const rubi_server::RubiFloat::ConstPtr &data)
 {
-    ASSERT(0);
+    auto backend_handler = handler->BackendReady();
+    if (!backend_handler)
+        return;
+
+    std::vector<uint8_t> ffdata;
+
+    unsigned int ffid = handler->GetFieldFfid(field_id);
+    unsigned int element_size = rubi_type_size(
+        handler->board.descriptor->fieldfunctions[ffid]->typecode);
+    unsigned int datasize =
+        handler->board.descriptor->fieldfunctions[ffid]->GetFFSize();
+    ffdata.resize(datasize);
+    ASSERT(datasize / element_size == data->data.size());
+
+    for (unsigned int i = 0; i < data->data.size(); i++)
+        DeinterpretFloat(
+            &ffdata.data()[i * element_size], data->data[i],
+            handler->board.descriptor->fieldfunctions[ffid]->typecode);
+
+    backend_handler->FFDataOutbound(
+        handler->board.descriptor->fieldfunctions[ffid], ffdata);
 }
 
 void InboundFieldCallbackString(std::shared_ptr<RosBoardHandler> handler,
-                                int func_id,
+                                int field_id,
                                 const rubi_server::RubiString::ConstPtr &data)
 {
-    ASSERT(0);
+    auto backend_handler = handler->BackendReady();
+    if (!backend_handler)
+        return;
+
+    std::vector<uint8_t> ffdata;
+
+    unsigned int ffid = handler->GetFieldFfid(field_id);
+    unsigned int element_size = rubi_type_size(
+        handler->board.descriptor->fieldfunctions[ffid]->typecode);
+    unsigned int datasize =
+        handler->board.descriptor->fieldfunctions[ffid]->GetFFSize();
+    ffdata.resize(datasize);
+    ASSERT(datasize / element_size == data->data.size());
+
+    for (unsigned int i = 0; i < data->data.size(); i++)
+        DeinterpretShortString(
+            &ffdata.data()[i * element_size], data->data[i],
+            handler->board.descriptor->fieldfunctions[ffid]->typecode);
+
+    backend_handler->FFDataOutbound(
+        handler->board.descriptor->fieldfunctions[ffid], ffdata);
 }
 
 void BoardWakeCallback(std::shared_ptr<RosBoardHandler> handler,
@@ -395,20 +473,11 @@ void RosModule::ReportCansUtilization(std::vector<float> util)
     ros_stuff->can_load_publisher.publish(msg);
 }
 
-void RosModule::LogInfo(string msg)
-{
-    ROS_INFO("%s", msg.c_str());
-}
+void RosModule::LogInfo(string msg) { ROS_INFO("%s", msg.c_str()); }
 
-void RosModule::LogWarning(string msg)
-{
-    ROS_WARN("%s", msg.c_str());
-}
+void RosModule::LogWarning(string msg) { ROS_WARN("%s", msg.c_str()); }
 
-void RosModule::LogError(string msg)
-{
-    ROS_FATAL("%s", msg.c_str());
-}
+void RosModule::LogError(string msg) { ROS_FATAL("%s", msg.c_str()); }
 
 std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
 {
@@ -733,6 +802,38 @@ void RosBoardHandler::FFDataInbound(std::vector<uint8_t> &data, int ffid)
         publisher.get().publish(bools);
 
         break;
+    case _RUBI_TYPECODES_float:
+        for (unsigned int i = 0; i < data.size();
+             i +=
+             rubi_type_size(board.descriptor->fieldfunctions[ffid]->typecode))
+        {
+            f32.data.push_back(InterpretFloat( // FIXME
+                data, board.descriptor->fieldfunctions[ffid]->typecode, i));
+        }
+
+        ASSERT(fftable[ffid].first == fftype_t::fftype_field);
+        publisher = ros_stuff->field_publishers[fftable[ffid].second];
+        ASSERT(publisher);
+        publisher.get().publish(f32);
+
+        break;
+
+    case _RUBI_TYPECODES_shortstring:
+    case _RUBI_TYPECODES_longstring:
+        for (unsigned int i = 0; i < data.size();
+             i +=
+             rubi_type_size(board.descriptor->fieldfunctions[ffid]->typecode))
+        {
+            str.data.push_back(InterpretString( // FIXME
+                data, board.descriptor->fieldfunctions[ffid]->typecode, i));
+        }
+
+        ASSERT(fftable[ffid].first == fftype_t::fftype_field);
+        publisher = ros_stuff->field_publishers[fftable[ffid].second];
+        ASSERT(publisher);
+        publisher.get().publish(str);
+
+        break;
 
     default:
         ASSERT(false);
@@ -745,9 +846,7 @@ void RosModule::Spin()
     ros_stuff->loop_rate->sleep();
 }
 
-bool RosModule::Quit(){
-    return !ros::ok();
-}
+bool RosModule::Quit() { return !ros::ok(); }
 
 int RosBoardHandler::GetFieldFfid(int field_id) { return fieldtable[field_id]; }
 
