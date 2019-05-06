@@ -835,6 +835,21 @@ void RosBoardHandler::FFDataInbound(std::vector<uint8_t> &data, int ffid)
 
         break;
 
+    case _RUBI_TYPECODES_float:
+        for (unsigned int i = 0; i < data.size();
+             i +=
+             rubi_type_size(board.descriptor->fieldfunctions[ffid]->typecode))
+        {
+            f32.data.push_back(*reinterpret_cast<float*>(&data[i]));
+        }
+
+        ASSERT(fftable[ffid].first == fftype_t::fftype_field);
+        publisher = ros_stuff->field_publishers[fftable[ffid].second];
+        ASSERT(publisher);
+        publisher.get().publish(f32);
+
+        break;
+
     default:
         ASSERT(false);
     }
