@@ -586,7 +586,7 @@ void RosBoardHandler::Init()
                     n.advertise<rubi_server::RubiInt>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
-                        1));
+                        10, true));
             }
             else
             {
@@ -618,7 +618,7 @@ void RosBoardHandler::Init()
                     n.advertise<rubi_server::RubiUnsignedInt>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
-                        10));
+                        10, true));
             }
             else
             {
@@ -648,7 +648,7 @@ void RosBoardHandler::Init()
                     n.advertise<rubi_server::RubiBool>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
-                        10));
+                        10, true));
             }
             else
             {
@@ -678,7 +678,7 @@ void RosBoardHandler::Init()
                     n.advertise<rubi_server::RubiFloat>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
-                        10));
+                        10, true));
             }
             else
             {
@@ -709,7 +709,7 @@ void RosBoardHandler::Init()
                     n.advertise<rubi_server::RubiString>(
                         board.descriptor->GetBoardPrefix(id) +
                             "fields_from_board/" + field->name,
-                        10));
+                        10, true));
             }
             else
             {
