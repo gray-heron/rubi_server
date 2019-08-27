@@ -155,11 +155,11 @@ FFDescriptor::BuildDescriptor(int ffid, int msg_type, std::string value)
     return out;
 }
 
-std::string BoardDescriptor::GetBoardPrefix(boost::optional<int> id)
+std::string BoardDescriptor::GetBoardPrefix(boost::optional<std::string> id)
 {
     std::string ret = std::string("/rubi/boards/") + board_name + "/";
     if (id.is_initialized())
-        ret += std::to_string(id.get()) + "/";
+        ret += id.get() + "/";
 
     return ret;
 }
@@ -172,7 +172,7 @@ BoardInstance::operator std::string() const
 {
     if (id)
     {
-        return descriptor->board_name + ":" + std::to_string(id.get());
+        return descriptor->board_name + ":" + id.get();
     }
     else
     {

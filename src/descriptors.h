@@ -74,7 +74,7 @@ public:
   std::vector<std::shared_ptr<FFDescriptor>> fieldfunctions;
 
   void ApplyInfo(uint8_t desc_type, std::string value);
-  std::string GetBoardPrefix(boost::optional<int> id);
+  std::string GetBoardPrefix(boost::optional<std::string> id);
   bool operator==(const BoardDescriptor &rhs);
   bool operator!=(const BoardDescriptor &rhs);
 };
@@ -85,7 +85,7 @@ public:
   BoardInstance(std::weak_ptr<BoardCommunicationHandler> inst)
       : backend_handler(inst){};
   std::shared_ptr<BoardDescriptor> descriptor;
-  boost::optional<int> id;
+  boost::optional<std::string> id;
 
   std::weak_ptr<BoardCommunicationHandler> backend_handler;
   explicit operator std::string() const;

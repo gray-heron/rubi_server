@@ -491,7 +491,7 @@ std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
     msg.driver = inst.descriptor->driver;
     msg.name = inst.descriptor->board_name;
     msg.version = inst.descriptor->version;
-    msg.id = inst.id.is_initialized() ? inst.id.get() : -1;
+    msg.id = inst.id.is_initialized() ? inst.id.get() : "";
 
     for (auto ff : inst.descriptor->fieldfunctions)
     {
@@ -527,7 +527,9 @@ void RosBoardHandler::Init()
 
     int fc = 0, tc = 0;
     fftable.resize(board.descriptor->fieldfunctions.size());
-    auto id = board.id;
+
+    const auto id = board.id;
+    const auto board_prefix = board.descriptor->GetBoardPrefix(id) ;
 
     auto wake_callback =
         std::bind(BoardWakeCallback, shared_from_this(), std::placeholders::_1);
@@ -549,16 +551,16 @@ void RosBoardHandler::Init()
                                  std::placeholders::_1, std::placeholders::_2);
 
     ros_stuff->wake_subscriber = n.subscribe<std_msgs::Empty>(
-        board.descriptor->GetBoardPrefix(id) + "wake", 1, wake_callback);
+        board_prefix + "wake", 1, wake_callback);
     ros_stuff->sleep_subscriber = n.subscribe<std_msgs::Empty>(
-        board.descriptor->GetBoardPrefix(id) + "sleep", 1, sleep_callback);
+        board_prefix + "sleep", 1, sleep_callback);
     ros_stuff->reboot_subscriber = n.subscribe<std_msgs::Empty>(
-        board.descriptor->GetBoardPrefix(id) + "reboot", 1, reboot_callback);
+        board_prefix + "reboottt", 1, reboot_callback);
 
     ros_stuff->board_online = n.advertiseService(
-        board.descriptor->GetBoardPrefix(id) + "is_online", online_handler);
+        board_prefix + "is_online", online_handler);
     ros_stuff->board_wake = n.advertiseService(
-        board.descriptor->GetBoardPrefix(id) + "is_wake", wake_handler);
+        board_prefix + "is_wake", wake_handler);
 
     for (const auto &ff : board.descriptor->fieldfunctions)
     {
@@ -584,7 +586,7 @@ void RosBoardHandler::Init()
             {
                 ros_stuff->field_publishers.push_back(
                     n.advertise<rubi_server::RubiInt>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_from_board/" + field->name,
                         10, true));
             }
@@ -602,7 +604,7 @@ void RosBoardHandler::Init()
 
                 ros_stuff->field_subscribers.push_back(
                     n.subscribe<rubi_server::RubiInt>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_to_board/" + field->name,
                         1, callback));
             }
@@ -616,7 +618,7 @@ void RosBoardHandler::Init()
             {
                 ros_stuff->field_publishers.push_back(
                     n.advertise<rubi_server::RubiUnsignedInt>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_from_board/" + field->name,
                         10, true));
             }
@@ -634,7 +636,7 @@ void RosBoardHandler::Init()
 
                 ros_stuff->field_subscribers.push_back(
                     n.subscribe<rubi_server::RubiUnsignedInt>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_to_board/" + field->name,
                         1, callback));
             }
@@ -646,7 +648,7 @@ void RosBoardHandler::Init()
             {
                 ros_stuff->field_publishers.push_back(
                     n.advertise<rubi_server::RubiBool>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_from_board/" + field->name,
                         10, true));
             }
@@ -664,7 +666,7 @@ void RosBoardHandler::Init()
 
                 ros_stuff->field_subscribers.push_back(
                     n.subscribe<rubi_server::RubiBool>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_to_board/" + field->name,
                         1, callback));
             }
@@ -676,7 +678,7 @@ void RosBoardHandler::Init()
             {
                 ros_stuff->field_publishers.push_back(
                     n.advertise<rubi_server::RubiFloat>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_from_board/" + field->name,
                         10, true));
             }
@@ -694,7 +696,7 @@ void RosBoardHandler::Init()
 
                 ros_stuff->field_subscribers.push_back(
                     n.subscribe<rubi_server::RubiFloat>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_to_board/" + field->name,
                         1, callback));
             }
@@ -707,7 +709,7 @@ void RosBoardHandler::Init()
             {
                 ros_stuff->field_publishers.push_back(
                     n.advertise<rubi_server::RubiString>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_from_board/" + field->name,
                         10, true));
             }
@@ -725,7 +727,7 @@ void RosBoardHandler::Init()
 
                 ros_stuff->field_subscribers.push_back(
                     n.subscribe<rubi_server::RubiString>(
-                        board.descriptor->GetBoardPrefix(id) +
+                        board_prefix +
                             "fields_to_board/" + field->name,
                         1, callback));
             }

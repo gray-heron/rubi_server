@@ -1,7 +1,7 @@
 #pragma once
 #include <inttypes.h>
 
-#define RUBI_PROTOCOL_VERSION 0xA000
+#define RUBI_PROTOCOL_VERSION 0xA001
 
 #define RUBI_BROADCAST1 (0x400)
 #define RUBI_BROADCAST2 (0x401)
@@ -24,6 +24,7 @@
 #define RUBI_MSG_COMMAND 0xc0
 #define RUBI_MSG_LOTTERY 0xd0
 #define RUBI_MSG_INIT_COMPLETE 0xe0
+
 
 #define RUBI_MSG_MASK 0b11110000
 
