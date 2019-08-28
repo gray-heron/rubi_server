@@ -1,7 +1,7 @@
 #pragma once
 #include <inttypes.h>
 
-#define RUBI_PROTOCOL_VERSION 0xA000
+#define RUBI_PROTOCOL_VERSION 0xA001
 
 #define RUBI_BROADCAST1 (0x400)
 #define RUBI_BROADCAST2 (0x401)

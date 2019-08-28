@@ -491,7 +491,7 @@ std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
     msg.driver = inst.descriptor->driver;
     msg.name = inst.descriptor->board_name;
     msg.version = inst.descriptor->version;
-    msg.id = inst.id.is_initialized() ? inst.id.get() : -1;
+    msg.id = inst.id.is_initialized() ? inst.id.get() : "";
 
     for (auto ff : inst.descriptor->fieldfunctions)
     {

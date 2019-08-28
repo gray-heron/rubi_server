@@ -36,7 +36,7 @@ BoardCommunicationHandler::BoardCommunicationHandler(CanHandler *can_handler,
 }
 
 void BoardCommunicationHandler::DescriptionDataInbound(
-    int desc_type, std::vector<uint8_t> &data)
+    const int desc_type, std::vector<uint8_t> &data)
 {
     std::string value = DataToString(data);
     if (!inst.descriptor)
@@ -46,7 +46,14 @@ void BoardCommunicationHandler::DescriptionDataInbound(
         inst.descriptor = std::make_shared<BoardDescriptor>();
     }
 
-    inst.descriptor->ApplyInfo(desc_type, value);
+    if (desc_type == RUBI_INFO_BOARD_ID)
+    {
+        inst.id.emplace(value);
+    }
+    else
+    {
+        inst.descriptor->ApplyInfo(desc_type, value);
+    }
 }
 
 void BoardCommunicationHandler::EventInbound(int error_type,
