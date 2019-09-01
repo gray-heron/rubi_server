@@ -65,6 +65,7 @@ add_service_files(
   FieldDescriptor.srv
   FuncDescriptor.srv
   BoardDescriptor.srv
+  BoardInstances.srv
   ShowBoards.srv
   BoardOnline.srv
   BoardWake.srv
