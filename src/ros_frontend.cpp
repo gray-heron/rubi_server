@@ -4,6 +4,7 @@
 
 #include <rubi_server/BoardAnnounce.h>
 #include <rubi_server/BoardDescriptor.h>
+#include <rubi_server/BoardInstances.h>
 #include <rubi_server/FieldDescriptor.h>
 #include <rubi_server/FuncDescriptor.h>
 #include <rubi_server/ShowBoards.h>
@@ -41,6 +42,7 @@ struct RosModule::ros_stuff_t
     ros::ServiceServer func_server;
     ros::ServiceServer board_shower;
     ros::ServiceServer board_descriptor;
+    ros::ServiceServer board_instances;
 
     ros::Rate *loop_rate;
 };
@@ -145,6 +147,30 @@ bool ShowBoardsHandler(rubi_server::ShowBoards::Request &req,
     for (const auto &entry : BoardManager::inst().descriptor_map)
     {
         res.boards_names.push_back(entry.first);
+    }
+
+    return true;
+}
+
+bool BoardInstancesHandler(
+    rubi_server::BoardInstances::Request&  req,
+    rubi_server::BoardInstances::Response& res)
+{
+    auto descriptor = BoardManager::inst().descriptor_map.find(req.board);
+    if(descriptor == BoardManager::inst().descriptor_map.end())
+        return false;
+
+    auto instances = BoardManager::inst().handlers.find(descriptor->second);
+    if(instances == BoardManager::inst().handlers.end())
+        return false;
+
+    for(const auto instance : instances->second)
+    {
+        auto id = instance.id;
+        if(id)
+            res.ids.push_back(id.get());
+        else
+            res.ids.push_back(std::string(""));
     }
 
     return true;
@@ -437,6 +463,8 @@ bool RosModule::Init(int argc, char **argv)
         ros_stuff->n->advertiseService("/rubi/show_boards", ShowBoardsHandler);
     ros_stuff->board_descriptor = ros_stuff->n->advertiseService(
         "/rubi/get_board_descriptor", BoardDescriptorHandler);
+    ros_stuff->board_instances = ros_stuff->n->advertiseService(
+        "/rubi/get_board_instances", BoardInstancesHandler);
 
     ros_stuff->board_announcer =
         ros_stuff->n->advertise<rubi_server::BoardAnnounce>("/rubi/new_boards",
