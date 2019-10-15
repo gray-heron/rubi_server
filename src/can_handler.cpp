@@ -6,7 +6,7 @@
 #include "exceptions.h"
 #include "frontend.h"
 #include "protocol_defs.h"
-#include "types.h" <
+#include "types.h" 
 
 #include <thread>
 
@@ -25,7 +25,7 @@ CanHandler::CanHandler(std::string can_name)
     traffic.resize(max_boards_count);
 
     socketcan = std::unique_ptr<SocketCan>(new SocketCan(can_name));
-    socketcan->can_send(std::pair<uint16_t, std::vector<uint8_t>>(
+    socketcan->Send(std::pair<uint16_t, std::vector<uint8_t>>(
         RUBI_BROADCAST1, lottery_invitation));
 }
 
@@ -37,7 +37,7 @@ uint8_t CanHandler::NewBoard(uint16_t lottery_id)
         {
             address_pool[i] =
                 std::make_shared<BoardCommunicationHandler>(this, i);
-            socketcan->can_send(std::pair<uint16_t, std::vector<uint8_t>>(
+            socketcan->Send(std::pair<uint16_t, std::vector<uint8_t>>(
                 RUBI_LOTTERY_RANGE_LOW + lottery_id,
                 std::vector<uint8_t>({(uint8_t)i})));
 
@@ -65,7 +65,7 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
         last_keepalive = time;
     }
 
-    while (auto msg = socketcan->can_receive(1))
+    while (auto msg = socketcan->Receive(1))
     {
         auto rx = *msg;
 
@@ -128,7 +128,7 @@ void CanHandler::Tick(std::chrono::system_clock::time_point time)
 uint64_t CanHandler::GetTrafficSoFar(bool reset)
 {
     uint64_t total_data =
-        socketcan->GetReceivedDataSize() + socketcan->GetSentDataSize();
+        socketcan->GetTotalTransmittedDataSize() + socketcan->GetTotalReceivedDataSize();
     uint64_t to_return = total_data - traffic_reported;
 
     if (reset)

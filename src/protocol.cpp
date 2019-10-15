@@ -305,7 +305,7 @@ void ProtocolHandler::can_send_array(uint16_t cob, int32_t size,
     std::vector<uint8_t> vdata;
     vdata.resize(size);
     memcpy(vdata.data(), data, size);
-    can_handler->socketcan->can_send(
+    can_handler->socketcan->Send(
         std::pair<uint16_t, std::vector<uint8_t>>(cob, vdata));
 }
 

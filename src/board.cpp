@@ -77,7 +77,7 @@ void BoardManager::RegisterNewHandler(
         {
             if (i->id == board_id)
             {
-                if (old_backend_handler = i->backend_handler.lock())
+                if ((old_backend_handler = i->backend_handler.lock()))
                     break;
             }
         }

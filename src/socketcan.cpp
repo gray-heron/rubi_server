@@ -1,26 +1,13 @@
-#include <cstring>
-#include <fcntl.h>
-#include <net/if.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <unistd.h>
+
 
 #include "exceptions.h"
 #include "socketcan.h"
 #include "types.h"
 
-// TODO: Clean this up
-
-#define CAN_FRAME_OVERHEAD 6
-
-char ctrlmsg[CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];
-msghdr smsg;
-struct iovec iov;
-struct can_frame frame;
+#include <thread>
 
 // http://stackoverflow.com/questions/15723061/how-to-check-if-interface-is-up
-bool SocketCan::is_interface_online(std::string port)
+bool SocketCan::IsInterfaceAvaliable(std::string port)
 {
     struct ifreq ifr;
     int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -31,20 +18,19 @@ bool SocketCan::is_interface_online(std::string port)
         perror("SIOCGIFFLAGS");
     }
     close(sock);
-    return !!(ifr.ifr_flags & IFF_UP);
+    return ifr.ifr_flags & IFF_UP;
 }
 
-int SocketCan::can_close()
+SocketCan::~SocketCan()
 {
     close(soc);
-    return 0;
 }
 
-int SocketCan::GetReceivedDataSize() { return rx_data_n; }
+size_t SocketCan::GetTotalReceivedDataSize() { return rx_data_n; }
 
-int SocketCan::GetSentDataSize() { return tx_data_n; }
+size_t SocketCan::GetTotalTransmittedDataSize() { return tx_data_n; }
 
-int SocketCan::can_send(std::pair<uint16_t, std::vector<uint8_t>> data)
+bool SocketCan::Send(std::pair<uint16_t, std::vector<uint8_t>> data, bool block)
 {
     int retval;
     can_frame frame;
@@ -53,52 +39,25 @@ int SocketCan::can_send(std::pair<uint16_t, std::vector<uint8_t>> data)
     memcpy(frame.data, data.second.data(), frame.can_dlc);
     frame.can_id = data.first;
 
-    retval = write(soc, &frame, sizeof(struct can_frame));
-    if (retval != sizeof(struct can_frame))
-    {
-        throw new CanFailureException("Transmission error!");
-    }
-    else
-    {
-        tx_data_n += data.second.size() + CAN_FRAME_OVERHEAD;
-        return (0);
-    }
+    do{
+        retval = write(soc, &frame, sizeof(struct can_frame));
+
+        if (retval == sizeof(struct can_frame)) {
+            tx_data_n += data.second.size();
+            return true;
+        }
+
+        std::this_thread::yield();
+    } while(block);
+
+    return false;
 }
 
 boost::optional<std::tuple<uint16_t, std::vector<uint8_t>, timeval>>
-SocketCan::can_receive(uint32_t timeout_ms)
+SocketCan::Receive(uint32_t timeout_ms)
 {
     struct can_frame frame_rd;
-    int recvbytes = 0;
-    read_can_port = 1;
-    /*
-            struct timeval timeout = { timeout_ms / 1000,
-                (timeout_ms % 1000) * 1000 };
 
-            fd_set readSet;
-            FD_ZERO(&readSet);
-            FD_SET(soc, &readSet);
-            if (select((soc + 1), &readSet, NULL, NULL, &timeout) >= 0)
-            {
-                if (FD_ISSET(soc, &readSet))
-                {
-                    recvbytes = read(soc, &frame_rd, sizeof(struct can_frame));
-                    struct timeval tv;
-                    ioctl(soc, SIOCGSTAMP, &tv);
-
-                    if (recvbytes)
-                    {
-                        std::vector<uint8_t> data;
-                        data.resize(frame_rd.can_dlc);
-                        memcpy(data.data(), frame_rd.data, frame_rd.can_dlc);
-                        return std::tuple<uint16_t, std::vector<uint8_t>,
-       timeval>
-                            (frame_rd.can_id, data, tv);
-                    }
-                }
-            }
-
-    */
     msghdr msg = smsg;
     cmsghdr *cmsg;
     timeval tv;
@@ -112,7 +71,7 @@ SocketCan::can_receive(uint32_t timeout_ms)
     {
         if (FD_ISSET(soc, &readSet))
         {
-            iov.iov_len = sizeof(frame);
+            iov.iov_len = sizeof(can_frame);
 
             auto nbytes_can = recvmsg(soc, &msg, 0);
             for (cmsg = CMSG_FIRSTHDR(&msg);
@@ -123,9 +82,11 @@ SocketCan::can_receive(uint32_t timeout_ms)
                 {
                     tv = *(struct timeval *)CMSG_DATA(cmsg);
                     std::vector<uint8_t> data;
+
                     data.resize(frame.can_dlc);
                     memcpy(data.data(), frame.data, data.size());
-                    rx_data_n += data.size() + CAN_FRAME_OVERHEAD;
+
+                    rx_data_n += data.size();
 
                     return std::tuple<uint16_t, std::vector<uint8_t>, timeval>(
                         frame.can_id, data, tv);
@@ -140,7 +101,6 @@ SocketCan::can_receive(uint32_t timeout_ms)
 SocketCan::SocketCan(std::string port)
 {
     struct ifreq ifr;
-    struct sockaddr_can addr;
     /* open socket */
 
     soc = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -169,7 +129,7 @@ SocketCan::SocketCan(std::string port)
         throw new CanFailureException("bind fail!");
     }
 
-    if (!is_interface_online(port))
+    if (!IsInterfaceAvaliable(port))
         throw new CanFailureException("Link is down!");
 
     smsg.msg_namelen = sizeof(addr);
