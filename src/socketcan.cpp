@@ -3,7 +3,6 @@
 #include "exceptions.h"
 #include "socketcan.h"
 #include "types.h"
-#include "ros/ros.h"
 
 #include <thread>
 
