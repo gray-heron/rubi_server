@@ -3,6 +3,7 @@
 #include "exceptions.h"
 #include "socketcan.h"
 #include "types.h"
+#include "ros/ros.h"
 
 #include <thread>
 
@@ -61,6 +62,7 @@ SocketCan::Receive(uint32_t timeout_ms)
     msghdr msg = smsg;
     cmsghdr *cmsg;
     timeval tv;
+    std::vector<uint8_t> data;
 
     fd_set readSet;
     FD_ZERO(&readSet);
@@ -81,17 +83,25 @@ SocketCan::Receive(uint32_t timeout_ms)
                 if (cmsg->cmsg_type == SO_TIMESTAMP)
                 {
                     tv = *(struct timeval *)CMSG_DATA(cmsg);
-                    std::vector<uint8_t> data;
-
-                    data.resize(frame.can_dlc);
-                    memcpy(data.data(), frame.data, data.size());
-
-                    rx_data_n += data.size();
-
-                    return std::tuple<uint16_t, std::vector<uint8_t>, timeval>(
-                        frame.can_id, data, tv);
+                }
+                else if (cmsg->cmsg_type == SO_RXQ_OVFL)
+                {
+                    uint32_t dropped_new = *(uint32_t *)CMSG_DATA(cmsg);
+                    if (dropped_new > dropped) 
+                    {
+                        log.Warning("dropped can frames due to receive buffer overflow");
+                        dropped = dropped_new;
+                    }
                 }
             }
+
+            data.resize(frame.can_dlc);
+            memcpy(data.data(), frame.data, data.size());
+
+            rx_data_n += data.size();
+
+            return std::tuple<uint16_t, std::vector<uint8_t>, timeval>(
+                frame.can_id, data, tv);
         }
     }
 
@@ -115,13 +125,21 @@ SocketCan::SocketCan(std::string port)
         throw new CanFailureException(std::string("no such interface ") + port +
                                       "!");
     }
-    const int timestamp_on = 1;
 
+    const int timestamp_on = 1;
     if (setsockopt(soc, SOL_SOCKET, SO_TIMESTAMP, &timestamp_on,
                    sizeof(timestamp_on)) < 0)
     {
         throw new CanFailureException("Can't set SO_TIMESTAMP!");
     }
+
+    const int dropmonitor_on = 1;
+    if (setsockopt(soc, SOL_SOCKET, SO_RXQ_OVFL, &dropmonitor_on,
+                   sizeof(dropmonitor_on)) < 0)
+    {
+        throw new CanFailureException("Can't set SO_RXQ_OVFL!");
+    }
+
     addr.can_ifindex = ifr.ifr_ifindex;
     fcntl(soc, F_SETFL, O_NONBLOCK);
     if (bind(soc, (struct sockaddr *)&addr, sizeof(addr)) < 0)
