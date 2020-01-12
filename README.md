@@ -4,34 +4,34 @@
 ## General description
 
 Rover Universal Board Infrastructure (RUBI) is a framework designed for rapid and reliable integration of
-STM32 controller based devices with the Robot Operating System (ROS) over the CAN bus.
+STM32 microcontroller-based devices with the Robot Operating System (ROS) over the CAN bus.
 It was conceived during works on the [Aleph1 rover project](http://continuum.uni.wroc.pl), in which the following systems model was implemented (simplified):
 
 ![alt text](doc/general_arch.png "Aleph1's sensors architecture")
 
-In this model, most of the robot functions (like sensor polling or the motor control) are directly managed by the programmable universal logic boards, which are equipped with the STM32F103 microcontroller, CAN bus transceiver and a wide range of IO (GPIO, UARTs, SPIs, etc.). Those boards are then connected to the robot’s main computer via multiple CAN buses. It was first planned, that each board will have a separate microcontroller code, a control program on the robot’s main computer and a separate GUI application. This ‘naive’ workflow of software/firmware development was found not efficient due to the following facts:
+In this model, most of the robot functions (like sensor polling or the motor control) are directly managed by the programmable, universal logic boards, who are equipped with the STM32F103 microcontroller, CAN bus transceiver and a wide range of IO (GPIO, UARTs, SPIs, etc.). Those boards are then connected to the robot’s main computer via multiple CAN buses. It was first planned, that each board will have a separate microcontroller code, a control program on the robot’s main computer, and a separate GUI application. This ‘naive’ workflow of software/firmware development was found not efficient due to the following facts:
 
-- when a new board was added, a new communication layer had to be carefully designed to avoid conflicts with the previous configuration,
-- when a new board was added, the code for all major robot’s components had to be modified (you have to touch the code of the board, the main computer, and the control station),
-- many of the logic boards need a very simple user interface, for example, the drill controller had four buttons and the power monitor displayed two integers,
-- writing a separate control program for each board discouraged implementing universal functions like the QoS of the bus, board remote reboot, emergency shutdown of the system, hot-plug etc.
+- When a new board was added, a new communication layer had to be carefully designed to avoid conflicts with the previous system configuration.
+- When a new board was added, the code for all major robot’s components had to be modified and given access to (the code of the developed board, the robot's main computer, and the control station).
+- Many of the logic boards need a very simple user interface. For example, the drill controller had four buttons, and the power monitor displayed two integers. The development time for such boards was mainly spent on middleware.
+- Writing a separate control program for each board (of which was many) discouraged implementing universal features like a quality service monitor for the communication, board remote reboot, emergency shutdown handling, hot-plug handling etc.
 
-To address these downsides, RUBI is designed so that in most cases, a new board is integrated to the system by specifying its capabilities in the microcontroller code with the provided API and simply plugging the board into one of the RUBI-controlled CAN buses.
+To address these downsides, RUBI is designed so that in most cases, a new board is integrated into the system by specifying its capabilities in the microcontroller code with the provided API, and simply plugging the board into one of the RUBI-controlled CAN buses.
 
-RUBI then dynamically addresses the board, handles communication between the board, the main computer and the control station, pushes data from the board to the ROS and depending on the programmer’s choice either automatically generates user interface for the board or provides a compact Python API with the previously-specified capabilities for the developer to write a GUI control program himself.
+RUBI then dynamically addresses the board, handles communication between the board, the main computer, and the control station, pushes data from the board to the ROS, and depending on the programmer’s choice, either automatically generates user interface for the board, or provides a compact Python API with the previously-specified capabilities for the developer to write a GUI control program himself.
 
 ## Subprojects
 
 RUBI consists of four components:
 
-- rubi_client (API for the STM32FX): using a set of macros, the programmer defines variables and function callbacks, which will represent the board capabilities and will be automatically synchronized by the code included with the API. This code also provides additional functions like basic hardware initialization, remote reboot or system time access,
-- rubi_server (this repository): the program which runs on the main computer, keeps track of the connected boards and does all the data synchronization between the ROS and the boards connected across multiple CAN buses,
-- rubi_generic_gui: dynamic user interface generator,
+- [rubi_client (link)](https://github.com/acriaer/rubi_client): a framework for board firmware development. Using a set of macros, the programmer defines variables and function callbacks, which will represent the board capabilities, and will be automatically exposed to ROS by rubi.
+- rubi_server (this repository): the program which runs on the robot's main computer, keeps track of the connected boards and does all the data synchronization between the ROS and the boards connected across multiple CAN buses,
+- rubi_generic_gui: dynamic user interface generator who visualizes connected boards and their exposed interfaces in real-time,
 - rubi_custom_gui: a template for custom interface creation with QtDesigner and rqt.
 
 ## Hardware
 
-Currently, it is easy to make rubi_client work on any STM32F1 or STM32F3 microcontroller (provided it is equipped with a CAN bus). It was tested on the:
+Currently, it is easy to make rubi_client work on any STM32-series microcontroller (provided it is equipped with a CAN bus). It was on extensively tested on the:
 
 <table>
     <tr>
@@ -45,9 +45,9 @@ Currently, it is easy to make rubi_client work on any STM32F1 or STM32F3 microco
 </table>
 
 
-As of hardware for the rubi_server, it runs on a Linux-based machine with a ROS installation, a CAN transceiver and a socketcan implementation for it. It is also possible to tunnel the CAN traffic over Ethernet with tools like cannelloni, but it is discouraged for purposes other than prototyping or debugging.
+As of hardware for the rubi_server, it only needs a Linux-based machine with a ROS installation, and a CAN bus accessible by the socketcan. It is also possible to tunnel the CAN traffic over Ethernet with tools like cannelloni, but it is not recommended for any production-like environments.
 
-An interesting configuration was tested using the Banana Pi M1+ microcomputer with the CAN bus on the A20 SoC and two additional MCP2515s connected over single SPI and two interrupt lines. This adds up to three CAN buses over two different chips being simultaneously managed by the rubi_server.
+An interesting configuration was tested using the Banana Pi M1+ microcomputer with the CAN bus on the A20 SoC, and two additional MCP2515s connected over single SPI, and two interrupt lines. This adds up to three CAN buses over two different chips being simultaneously managed by the rubi_server.
 
 ![alt text](doc/banana.jpg "")
 
