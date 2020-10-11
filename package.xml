@@ -1,29 +1,22 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>rubi_server</name>
   <version>1.0.0</version>
   <description>The rubi_server package</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <!-- Example:  -->
-  <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="ave@cezar.info">cezar</maintainer>
 
-
-  <!-- One license tag required, multiple allowed, one license per tag -->
-  <!-- Commonly used license strings: -->
-  <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
   <license>GPLv3</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>boost</build_depend>
-  <run_depend>boost</run_depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- Other tools can request additional information be placed here -->
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
 
-  </export>
+  <depend>boost</depend>
+  <depend>linux-kernel-headers</depend>
+
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+
 </package>
