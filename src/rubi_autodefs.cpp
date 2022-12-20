@@ -1,8 +1,8 @@
 
 #include <inttypes.h>
 
-#include "exceptions.h"
-#include "rubi_autodefs.h"
+#include "rubi_server/exceptions.h"
+#include "rubi_server/rubi_autodefs.h"
 
 uint8_t rubi_type_size(uint8_t typecode)
 {

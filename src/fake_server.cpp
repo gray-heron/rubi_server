@@ -2,11 +2,11 @@
 #include <cstring>
 #include <vector>
 
-#include "board.h"
-#include "exceptions.h"
-#include "fake_communication.h"
-#include "ros_frontend.h"
-#include "rubi_autodefs.h"
+#include "rubi_server/board.h"
+#include "rubi_server/exceptions.h"
+#include "rubi_server/fake_communication.h"
+#include "rubi_server/ros_frontend.h"
+#include "rubi_server/rubi_autodefs.h"
 
 using std::vector;
 using std::string;

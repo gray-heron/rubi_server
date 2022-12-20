@@ -1,10 +1,10 @@
 #include <cstring>
 #include <vector>
 
-#include "board.h"
-#include "exceptions.h"
-#include "ros_frontend.h"
-#include "socketcan.h"
+#include "rubi_server/board.h"
+#include "rubi_server/exceptions.h"
+#include "rubi_server/ros_frontend.h"
+#include "rubi_server/socketcan.h"
 
 using std::vector;
 using std::string;

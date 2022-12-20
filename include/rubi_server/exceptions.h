@@ -4,7 +4,7 @@
 #include <exception>
 #include <string>
 
-#include "board.h"
+#include "rubi_server/board.h"
 
 #define ASSERT(x, ...) \
     if (!(x))          \

@@ -6,7 +6,7 @@
 #include <vector>
 #include <boost/optional.hpp>
 
-#include "types.h"
+#include "rubi_server/types.h"
 
 class BoardDescriptor;
 class BoardCommunicationHandler;

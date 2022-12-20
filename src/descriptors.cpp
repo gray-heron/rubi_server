@@ -3,10 +3,10 @@
 #include <boost/regex.hpp>
 #include <tuple>
 
-#include "descriptors.h"
-#include "exceptions.h"
-#include "protocol_defs.h"
-#include "rubi_autodefs.h"
+#include "rubi_server/descriptors.h"
+#include "rubi_server/exceptions.h"
+#include "rubi_server/protocol_defs.h"
+#include "rubi_server/rubi_autodefs.h"
 
 void SplitNames(std::vector<std::string> &ret, std::string str)
 {

@@ -1,5 +1,5 @@
-#include "logger.h"
-#include "board.h"
+#include "rubi_server/logger.h"
+#include "rubi_server/board.h"
 
 int Logger::longest_module_name = 0;
 

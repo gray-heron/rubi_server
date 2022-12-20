@@ -1,11 +1,11 @@
 #include <memory>
 
-#include "board.h"
-#include "exceptions.h"
-#include "fake_communication.h"
-#include "frontend.h"
-#include "protocol_defs.h"
-#include "rubi_autodefs.h"
+#include "rubi_server/board.h"
+#include "rubi_server/exceptions.h"
+#include "rubi_server/fake_communication.h"
+#include "rubi_server/frontend.h"
+#include "rubi_server/protocol_defs.h"
+#include "rubi_server/rubi_autodefs.h"
 
 #include <thread>
 
