@@ -312,7 +312,7 @@ void ProtocolHandler::SendFFData(
   rubi_dataheader h = {cob, fftype, ffid, (uint8_t)data.size()};
 
   rubi_tx_enqueue_back(reinterpret_cast<uint8_t *>(&h), sizeof(h));
-  rubi_tx_enqueue_back(data.data(), data.size());
+  rubi_tx_enqueue_back(const_cast<uint8_t *>(data.data()), data.size());
 
   rubi_continue_tx();
 }
