@@ -1,6 +1,0 @@
-string board_name
-string func_name
----
-string[] arg_names
-int32 type_in
-int32 type_out
