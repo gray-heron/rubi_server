@@ -45,23 +45,16 @@ public:
 
 class RosBoardHandler : public FrontendBoardHandler
 {
-  friend class RosModule;
   RosModule * ros_module;
+  BoardInstance board;
 
   Logger log {"RosBoardHandler"};
 
 public:
-  // sptr<BoardCommunicationHandler> BackendReady();
-  BoardInstance board;
-
-  // int GetFieldFfid(int field_id);
-  // int GetFunctionFfid(int function_id);
+  RosBoardHandler(BoardInstance inst, RosModule * ros_module);
 
   void FFDataInbound(std::vector<uint8_t> & data, int ffid) override;
   void ReplaceBackendHandler(sptr<BoardCommunicationHandler>) override;
   void Shutdown() override;
   void ConnectionLost() override;
-
-  RosBoardHandler(BoardInstance inst, RosModule * ros_module);
-  // void Init();
 };

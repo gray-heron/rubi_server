@@ -17,22 +17,28 @@ bool RosModule::Init(int argc, char ** argv)
   return true;
 }
 
-void RosModule::LogInfo(string msg) {std::cout << msg << std::endl;}
-
-void RosModule::LogWarning(string msg) {std::cout << msg << std::endl;}
-
-void RosModule::LogError(string msg) {std::cout << msg << std::endl;}
-
-std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
-{
-  return std::make_shared<RosBoardHandler>(inst, this);
-}
-
 std::vector<std::string> RosModule::GetCansNames() {return cans_names;}
 
 void RosModule::Spin() {}
 
 bool RosModule::Quit() {return false;}
 
+void RosModule::LogInfo(string msg) {std::cout << msg << std::endl;}
+
+void RosModule::LogWarning(string msg) {std::cout << msg << std::endl;}
+
+void RosModule::LogError(string msg) {std::cout << msg << std::endl;}
 
 void RosModule::ReportCansUtilization(std::vector<float> util) {}
+
+std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
+{
+  return std::make_shared<RosBoardHandler>(inst, this);
+}
+
+RosBoardHandler::RosBoardHandler(BoardInstance inst, RosModule * ros_module)
+: ros_module(ros_module), board(inst) {}
+void RosBoardHandler::FFDataInbound(std::vector<uint8_t> & data, int ffid) {}
+void RosBoardHandler::ReplaceBackendHandler(sptr<BoardCommunicationHandler>) {}
+void RosBoardHandler::Shutdown() {}
+void RosBoardHandler::ConnectionLost() {}
