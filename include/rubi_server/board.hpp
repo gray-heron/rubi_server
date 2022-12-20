@@ -17,7 +17,7 @@
 class BoardManager
 {
 public:
-  static BoardManager &inst()
+  static BoardManager & inst()
   {
     static BoardManager instance;
     return instance;

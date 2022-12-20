@@ -46,11 +46,11 @@
 
 typedef struct shortstring
 {
-    uint8_t str[32];
+  uint8_t str[32];
 } shortstring;
 typedef struct longstring
 {
-    uint8_t str[256];
+  uint8_t str[256];
 } longstring;
 
 // typedef uint8_t shortstring;
