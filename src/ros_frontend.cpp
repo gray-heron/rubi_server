@@ -2,10 +2,10 @@
 #include <functional>
 #include <thread>
 
-#include "rubi_server/descriptors.h"
-#include "rubi_server/exceptions.h"
-#include "rubi_server/ros_frontend.h"
-#include "rubi_server/rubi_autodefs.h"
+#include "rubi_server/descriptors.hpp"
+#include "rubi_server/exceptions.hpp"
+#include "rubi_server/ros_frontend.hpp"
+#include "rubi_server/rubi_autodefs.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 

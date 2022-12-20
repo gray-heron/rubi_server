@@ -2,7 +2,7 @@
 #include <string>
 #include <tuple>
 
-#include "rubi_server/communication.h"
+#include "rubi_server/communication.hpp"
 
 typedef std::tuple<std::string, std::vector<std::string>, int, boost::any>
     fields_desc;

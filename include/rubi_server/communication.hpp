@@ -15,12 +15,12 @@ class ProtocolHandler;
 class FrontendBoardHandler;
 class CommunicationFaker;
 
-#include "rubi_server/board.h"
-#include "rubi_server/descriptors.h"
-#include "rubi_server/frontend.h"
-#include "rubi_server/logger.h"
-#include "rubi_server/protocol.h"
-#include "rubi_server/socketcan.h"
+#include "rubi_server/board.hpp"
+#include "rubi_server/descriptors.hpp"
+#include "rubi_server/frontend.hpp"
+#include "rubi_server/logger.hpp"
+#include "rubi_server/protocol.hpp"
+#include "rubi_server/socketcan.hpp"
 
 class CanHandler
 {

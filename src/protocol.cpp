@@ -1,5 +1,5 @@
-#include "rubi_server/protocol.h"
-#include "rubi_server/exceptions.h"
+#include "rubi_server/protocol.hpp"
+#include "rubi_server/exceptions.hpp"
 
 #include <algorithm>
 

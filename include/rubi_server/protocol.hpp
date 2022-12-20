@@ -3,11 +3,11 @@
 #include <inttypes.h>
 #include <memory>
 
-#include "rubi_server/board.h"
-#include "rubi_server/communication.h"
-#include "rubi_server/logger.h"
-#include "rubi_server/protocol_defs.h"
-#include "rubi_server/socketcan.h"
+#include "rubi_server/board.hpp"
+#include "rubi_server/communication.hpp"
+#include "rubi_server/logger.hpp"
+#include "rubi_server/protocol_defs.hpp"
+#include "rubi_server/socketcan.hpp"
 
 #define RUBI_BUFFER_SIZE (0xfff + 8 * sizeof(rubi_dataheader))
 

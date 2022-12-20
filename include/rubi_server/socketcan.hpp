@@ -16,7 +16,7 @@
 #include <cstring>
 #include <boost/optional/optional.hpp>
 
-#include "rubi_server/logger.h"
+#include "rubi_server/logger.hpp"
 
 class SocketCan
 {

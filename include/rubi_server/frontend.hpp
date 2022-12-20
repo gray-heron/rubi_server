@@ -6,8 +6,8 @@
 class FrontendBoardHandler;
 class RubiFrontend;
 
-#include "rubi_server/communication.h"
-#include "rubi_server/descriptors.h"
+#include "rubi_server/communication.hpp"
+#include "rubi_server/descriptors.hpp"
 
 class RubiFrontend
 {

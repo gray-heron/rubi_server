@@ -1,7 +1,7 @@
 #ifndef H_LOGGER
 #define H_LOGGER
 
-#include "rubi_server/types.h"
+#include "rubi_server/types.hpp"
 #include <string>
 
 class Logger

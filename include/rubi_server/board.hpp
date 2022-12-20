@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "rubi_server/descriptors.h"
-#include "rubi_server/frontend.h"
+#include "rubi_server/descriptors.hpp"
+#include "rubi_server/frontend.hpp"
 
 // this singleton is not beautiful
 class BoardManager

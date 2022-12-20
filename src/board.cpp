@@ -1,7 +1,7 @@
 #include <memory>
 
-#include "rubi_server/board.h"
-#include "rubi_server/exceptions.h"
+#include "rubi_server/board.hpp"
+#include "rubi_server/exceptions.hpp"
 
 BoardManager::BoardManager() {}
 

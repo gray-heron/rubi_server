@@ -4,10 +4,10 @@
 #include <memory>
 #include <string>
 
-#include "rubi_server/board.h"
-#include "rubi_server/communication.h"
-#include "rubi_server/descriptors.h"
-#include "rubi_server/frontend.h"
+#include "rubi_server/board.hpp"
+#include "rubi_server/communication.hpp"
+#include "rubi_server/descriptors.hpp"
+#include "rubi_server/frontend.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 
