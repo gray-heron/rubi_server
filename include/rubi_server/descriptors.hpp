@@ -1,9 +1,10 @@
-#ifndef H_DESCRIPTORS
-#define H_DESCRIPTORS
+#pragma once
 
+#include <memory>
 #include <string>
 #include <tuple>
 #include <vector>
+
 #include <boost/optional.hpp>
 
 #include "rubi_server/types.hpp"
@@ -24,7 +25,7 @@ public:
   virtual int GetFFSize() = 0;
   virtual int GetFFType() = 0;
 
-  FFDescriptor(int ffid)
+  explicit FFDescriptor(int ffid)
   : ffid(ffid), typecode(0), complete(0) {}
   virtual ~FFDescriptor() {}
   virtual bool CheckCompleteness();
@@ -46,13 +47,13 @@ public:
   std::vector<std::string> subfields_names;
   int access;
 
-  FieldDescriptor(int ffid)
+  explicit FieldDescriptor(int ffid)
   : FFDescriptor(ffid), access(0) {}
 
-  virtual void Build(int desc_id, std::string value) override;
-  virtual int GetFFSize() override;
-  virtual int GetFFType() override;
-  virtual bool operator==(const sptr<FFDescriptor> & rhs) override;
+  void Build(int desc_id, std::string value) override;
+  int GetFFSize() override;
+  int GetFFType() override;
+  bool operator==(const sptr<FFDescriptor> & rhs) override;
 };
 
 class FunctionDescriptor : public FFDescriptor
@@ -61,19 +62,17 @@ public:
   std::vector<std::string> arg_names;
   int out_typecode;
 
-  FunctionDescriptor(int ffid)
+  explicit FunctionDescriptor(int ffid)
   : FFDescriptor(ffid), out_typecode(0) {}
 
-  virtual void Build(int desc_id, std::string value) override;
-  virtual int GetFFSize() override;
-  virtual int GetFFType() override;
-  virtual bool operator==(const sptr<FFDescriptor> & rhs) override;
+  void Build(int desc_id, std::string value) override;
+  int GetFFSize() override;
+  int GetFFType() override;
+  bool operator==(const sptr<FFDescriptor> & rhs) override;
 };
 
 class BoardDescriptor
 {
-private:
-
 public:
   std::string board_name, version, driver, description;
   std::vector<std::shared_ptr<FFDescriptor>> fieldfunctions;
@@ -87,7 +86,7 @@ public:
 class BoardInstance
 {
 public:
-  BoardInstance(std::weak_ptr<BoardCommunicationHandler> inst)
+  explicit BoardInstance(std::weak_ptr<BoardCommunicationHandler> inst)
   : backend_handler(inst) {}
   std::shared_ptr<BoardDescriptor> descriptor;
   boost::optional<std::string> id;
@@ -109,5 +108,3 @@ public:
 };
 
 bool operator<(BoardInstance & lhs, BoardInstance & rhs);
-
-#endif

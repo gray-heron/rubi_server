@@ -1,7 +1,8 @@
+#include <tuple>
+
 #include <boost/algorithm/string/regex.hpp>
 #include <boost/range/combine.hpp>
 #include <boost/regex.hpp>
-#include <tuple>
 
 #include "rubi_server/descriptors.hpp"
 #include "rubi_server/exceptions.hpp"
@@ -125,7 +126,7 @@ void FunctionDescriptor::Build(int desc_id, std::string value)
 int FieldDescriptor::GetFFSize()
 {
   return rubi_type_size(typecode) *
-         (std::max(subfields_names.size(), (size_t)1));
+         (std::max(subfields_names.size(), static_cast<size_t>(1)));
 }
 
 int FunctionDescriptor::GetFFSize()

@@ -1,7 +1,7 @@
+#include <algorithm>
+
 #include "rubi_server/protocol.hpp"
 #include "rubi_server/exceptions.hpp"
-
-#include <algorithm>
 
 ProtocolHandler::ProtocolHandler(
   BoardCommunicationHandler * _board_handler,
@@ -214,7 +214,7 @@ void ProtocolHandler::rubi_continue_tx()
   uint8_t data[8];
   rubi_flock();
 
-  for (;; ) { //! can_mailbox_full()
+  for (;; ) {  //! can_mailbox_full()
     if (rubi_tx_current_header.msg_type == 0 &&
       rubi_tx_avaliable_space() == RUBI_BUFFER_SIZE)
     {
@@ -222,8 +222,8 @@ void ProtocolHandler::rubi_continue_tx()
     }
 
     if (rubi_tx_current_header.msg_type == 0) {
-      rubi_tx_current_header = *(
-        (rubi_dataheader *)rubi_get_tx_chunk(sizeof(rubi_dataheader)));
+      rubi_tx_current_header =
+        *reinterpret_cast<rubi_dataheader *>(rubi_get_tx_chunk(sizeof(rubi_dataheader)));
 
       block_transfer = rubi_tx_current_header.data_len > 6;
       if (block_transfer) {
@@ -242,9 +242,9 @@ void ProtocolHandler::rubi_continue_tx()
 
     if (block_transfer && rubi_tx_current_header.data_len != 0) {
       uint32_t data_size =
-        std::min(7, (int)rubi_tx_current_header.data_len);
+        std::min(7, static_cast<int>(rubi_tx_current_header.data_len));
       data[0] = RUBI_MSG_BLOCK;
-      memcpy((void *)&data[1], rubi_get_tx_chunk(data_size), data_size);
+      memcpy(reinterpret_cast<void *>(&data[1]), rubi_get_tx_chunk(data_size), data_size);
 
       can_send_array(rubi_tx_current_header.cob, data_size + 1, data);
 
@@ -310,7 +310,7 @@ void ProtocolHandler::SendFFData(
 
   rubi_dataheader h = {cob, fftype, ffid, (uint8_t)data.size()};
 
-  rubi_tx_enqueue_back((uint8_t *)&h, sizeof(h));
+  rubi_tx_enqueue_back(reinterpret_cast<uint8_t *>(&h), sizeof(h));
   rubi_tx_enqueue_back((uint8_t *)data.data(), data.size());
 
   rubi_continue_tx();

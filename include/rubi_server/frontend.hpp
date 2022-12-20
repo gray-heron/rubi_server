@@ -1,13 +1,16 @@
 #pragma once
 
-#include <boost/optional.hpp>
 #include <memory>
+#include <string>
+#include <vector>
 
-class FrontendBoardHandler;
-class RubiFrontend;
+#include <boost/optional.hpp>
 
 #include "rubi_server/communication.hpp"
 #include "rubi_server/descriptors.hpp"
+
+class FrontendBoardHandler;
+class RubiFrontend;
 
 class RubiFrontend
 {

@@ -6,10 +6,10 @@
 #define RUBI_BROADCAST1 (0x400)
 #define RUBI_BROADCAST2 (0x401)
 
-#define RUBI_ADDRESS_RANGE1_LOW ((uint16_t)0x402) // interrupt
+#define RUBI_ADDRESS_RANGE1_LOW ((uint16_t)0x402)  // interrupt
 #define RUBI_ADDRESS_RANGE1_HIGH (0x440)
 
-#define RUBI_ADDRESS_RANGE2_LOW (0x441) // no interrupt
+#define RUBI_ADDRESS_RANGE2_LOW (0x441)  // no interrupt
 #define RUBI_ADDRESS_RANGE2_HIGH (0x4ff)
 
 #define RUBI_LOTTERY_RANGE_LOW (0x480)
@@ -53,7 +53,7 @@
 
 #define RUBI_COMMAND_REBOOT 0x10
 #define RUBI_COMMAND_SOFTSLEEP 0x20
-#define RUBI_COMMAND_HARDSLEEP 0x30 // not implemented
+#define RUBI_COMMAND_HARDSLEEP 0x30  // not implemented
 #define RUBI_COMMAND_HOLD 0x40
 #define RUBI_COMMAND_OPERATIONAL 0x50
 #define RUBI_COMMAND_WAKE 0x60

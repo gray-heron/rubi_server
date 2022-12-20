@@ -1,6 +1,7 @@
-#include <boost/algorithm/string.hpp>
 #include <functional>
 #include <thread>
+
+#include <boost/algorithm/string.hpp>
 
 #include "rubi_server/descriptors.hpp"
 #include "rubi_server/exceptions.hpp"
@@ -29,15 +30,9 @@ std::shared_ptr<FrontendBoardHandler> RosModule::NewBoard(BoardInstance inst)
 
 std::vector<std::string> RosModule::GetCansNames() {return cans_names;}
 
-void RosModule::Spin()
-{
-
-}
+void RosModule::Spin() {}
 
 bool RosModule::Quit() {return false;}
 
 
-void RosModule::ReportCansUtilization(std::vector<float> util)
-{
-
-}
+void RosModule::ReportCansUtilization(std::vector<float> util) {}

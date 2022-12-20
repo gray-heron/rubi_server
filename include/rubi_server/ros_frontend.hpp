@@ -1,8 +1,10 @@
 #pragma once
 
-#include <boost/optional.hpp>
 #include <memory>
 #include <string>
+#include <vector>
+
+#include <boost/optional.hpp>
 
 #include "rubi_server/board.hpp"
 #include "rubi_server/communication.hpp"

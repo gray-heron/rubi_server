@@ -1,7 +1,10 @@
 #pragma once
 
 #include <inttypes.h>
+
 #include <memory>
+#include <utility>
+#include <vector>
 
 #include "rubi_server/board.hpp"
 #include "rubi_server/communication.hpp"

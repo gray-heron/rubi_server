@@ -14,6 +14,9 @@
 #include <tuple>
 #include <vector>
 #include <cstring>
+#include <string>
+#include <utility>
+
 #include <boost/optional/optional.hpp>
 
 #include "rubi_server/logger.hpp"
@@ -44,6 +47,6 @@ public:
   boost::optional<std::tuple<uint16_t, std::vector<uint8_t>, timeval>>
   Receive(uint32_t timeout_ms);
 
-  SocketCan(std::string port);
+  explicit SocketCan(std::string port);
   ~SocketCan();
 };

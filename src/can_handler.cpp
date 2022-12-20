@@ -1,4 +1,5 @@
 #include <memory>
+#include <thread>
 
 #include "rubi_server/board.hpp"
 #include "rubi_server/communication.hpp"
@@ -6,8 +7,6 @@
 #include "rubi_server/frontend.hpp"
 #include "rubi_server/protocol_defs.hpp"
 #include "rubi_server/types.hpp"
-
-#include <thread>
 
 using std::get;
 using std::string;

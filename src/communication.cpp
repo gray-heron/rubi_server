@@ -1,4 +1,5 @@
 #include <memory>
+#include <thread>
 
 #include "rubi_server/board.hpp"
 #include "rubi_server/communication.hpp"
@@ -6,8 +7,6 @@
 #include "rubi_server/frontend.hpp"
 #include "rubi_server/protocol_defs.hpp"
 #include "rubi_server/types.hpp"
-
-#include <thread>
 
 using std::get;
 using std::string;
@@ -66,10 +65,10 @@ void BoardCommunicationHandler::EventInbound(
     case RUBI_EVENT_FATAL_ERROR:
       ASSERT(data.size() > 5);
       for (unsigned int i = 5; i < data.size(); i++) {
-        error_msg += (char)data[i];
+        error_msg += static_cast<char>(data[i]);
       }
 
-      error_code = *((uint32_t *)(data.data() + 1));
+      error_code = *(reinterpret_cast<uint32_t *>(data.data() + 1));
 
       switch (data[0]) {
         case RUBI_ERROR_ASSERT:
@@ -89,7 +88,7 @@ void BoardCommunicationHandler::EventInbound(
       ASSERT(data.size() > 1);
 
       msg = "Info from board " + (std::string)inst + ": ";
-      msg += std::string((char *)data.data() + 1);
+      msg += std::string(reinterpret_cast<char *>(data.data()) + 1);
 
       log.Info(msg);
       break;
@@ -98,7 +97,7 @@ void BoardCommunicationHandler::EventInbound(
       ASSERT(data.size() > 1);
 
       msg = "Info from board " + (std::string)inst + ": ";
-      msg += std::string((char *)data.data() + 1);
+      msg += std::string(reinterpret_cast<char *>(data.data()) + 1);
 
       log.Warning(msg);
       break;
@@ -107,7 +106,7 @@ void BoardCommunicationHandler::EventInbound(
       ASSERT(data.size() > 1);
 
       msg = "Info from board " + (std::string)inst + ": ";
-      msg += std::string((char *)data.data() + 1);
+      msg += std::string(reinterpret_cast<char *>(data.data()) + 1);
 
       log.Error(msg);
       break;

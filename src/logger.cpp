@@ -7,7 +7,7 @@ Logger::Logger(std::string module_name)
 : module(module_name)
 {
   longest_module_name =
-    std::max(longest_module_name, (int)module_name.length());
+    std::max(longest_module_name, static_cast<int>(module_name.length()));
 }
 
 std::string Logger::GetSpacing()
@@ -17,7 +17,6 @@ std::string Logger::GetSpacing()
 
 void Logger::Info(std::string msg)
 {
-
   BoardManager::inst().frontend->LogInfo(
     "[" + module + "]" + GetSpacing() +
     msg);

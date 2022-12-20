@@ -1,19 +1,16 @@
 #pragma once
 
-#include <boost/optional.hpp>
-#include <exception>
 #include <inttypes.h>
+
+#include <exception>
 #include <map>
 #include <memory>
 #include <queue>
 #include <string>
 #include <tuple>
+#include <vector>
 
-class CanHandler;
-class BoardCommunicationHandler;
-class ProtocolHandler;
-class FrontendBoardHandler;
-class CommunicationFaker;
+#include <boost/optional.hpp>
 
 #include "rubi_server/board.hpp"
 #include "rubi_server/descriptors.hpp"
@@ -21,6 +18,12 @@ class CommunicationFaker;
 #include "rubi_server/logger.hpp"
 #include "rubi_server/protocol.hpp"
 #include "rubi_server/socketcan.hpp"
+
+class CanHandler;
+class BoardCommunicationHandler;
+class ProtocolHandler;
+class FrontendBoardHandler;
+class CommunicationFaker;
 
 class CanHandler
 {
@@ -44,7 +47,7 @@ class CanHandler
   Logger log{"CanHandler"};
 
 public:
-  CanHandler(std::string can_name);
+  explicit CanHandler(std::string can_name);
   uint64_t GetTrafficSoFar(bool reset = false);
 
   // std::shared_ptr<BoardCommunicationHandler> GetHandler(int board_node_id);

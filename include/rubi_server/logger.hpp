@@ -1,8 +1,8 @@
-#ifndef H_LOGGER
-#define H_LOGGER
+#pragma once
+
+#include <string>
 
 #include "rubi_server/types.hpp"
-#include <string>
 
 class Logger
 {
@@ -11,10 +11,8 @@ class Logger
   std::string GetSpacing();
 
 public:
-  Logger(std::string module_name);
+  explicit Logger(std::string module_name);
   void Info(std::string);
   void Warning(std::string);
   void Error(std::string);
 };
-
-#endif

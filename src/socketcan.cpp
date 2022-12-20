@@ -1,8 +1,8 @@
+#include <thread>
+
 #include "rubi_server/exceptions.hpp"
 #include "rubi_server/socketcan.hpp"
 #include "rubi_server/types.hpp"
-
-#include <thread>
 
 // http://stackoverflow.com/questions/15723061/how-to-check-if-interface-is-up
 bool SocketCan::IsInterfaceAvaliable(std::string port)
@@ -77,7 +77,7 @@ SocketCan::Receive(uint32_t timeout_ms)
         if (cmsg->cmsg_type == SO_TIMESTAMP) {
           tv = *(struct timeval *)CMSG_DATA(cmsg);
         } else if (cmsg->cmsg_type == SO_RXQ_OVFL) {
-          uint32_t dropped_new = *(uint32_t *)CMSG_DATA(cmsg);
+          uint32_t dropped_new = *reinterpret_cast<uint32_t *>(CMSG_DATA(cmsg));
           if (dropped_new > dropped) {
             log.Warning("dropped can frames due to receive buffer overflow");
             dropped = dropped_new;

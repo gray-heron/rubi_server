@@ -1,14 +1,14 @@
-#ifndef H_BOARD
-#define H_BOARD
+#pragma once
 
-#include <boost/optional.hpp>
 #include <chrono>
 #include <ctime>
 #include <map>
-#include <map>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
+
+#include <boost/optional.hpp>
 
 #include "rubi_server/descriptors.hpp"
 #include "rubi_server/frontend.hpp"
@@ -50,5 +50,3 @@ public:
   sptr<BoardCommunicationHandler>
   RequestNewHandler(BoardInstance inst, sptr<FrontendBoardHandler> frontend);
 };
-
-#endif
