@@ -10,7 +10,8 @@ bool SocketCan::IsInterfaceAvaliable(std::string port)
   struct ifreq ifr;
   int sock = socket(PF_CAN, SOCK_RAW, CAN_RAW);
   memset(&ifr, 0, sizeof(ifr));
-  strcpy(ifr.ifr_name, port.c_str());
+  // strcpy(ifr.ifr_name, port.c_str());
+  snprintf(ifr.ifr_name, IFNAMSIZ, "%s", port.c_str());
   if (ioctl(sock, SIOCGIFFLAGS, &ifr) < 0) {
     perror("SIOCGIFFLAGS");
   }
@@ -106,7 +107,8 @@ SocketCan::SocketCan(std::string port)
     throw new CanFailureException("soc < 0!");
   }
   addr.can_family = AF_CAN;
-  strcpy(ifr.ifr_name, port.c_str());
+  // strcpy(ifr.ifr_name, port.c_str());
+  snprintf(ifr.ifr_name, IFNAMSIZ, "%s", port.c_str());
   if (ioctl(soc, SIOCGIFINDEX, &ifr) < 0) {
     throw new CanFailureException(
             std::string("no such interface ") + port +

@@ -122,7 +122,7 @@ void BoardCommunicationHandler::CommandInbound(
   std::vector<uint8_t> & data)
 {
   ASSERT(command_id == RUBI_COMMAND_KEEPALIVE);
-  // TODO keep-alive id
+  // TODO(cezar?) keep-alive id
 
   ASSERT(data.size() == 1);
   wake = data[0];

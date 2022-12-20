@@ -31,7 +31,7 @@ class SocketCan
 
   struct can_frame frame;
   struct sockaddr_can addr;
-  char ctrlmsg[CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];
+  char ctrlmsg[CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];  // NOLINT
   msghdr smsg;
   struct iovec iov;
 
