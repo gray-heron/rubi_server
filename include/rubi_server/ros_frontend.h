@@ -4,81 +4,62 @@
 #include <memory>
 #include <string>
 
-#include "board.h"
-#include "communication.h"
-#include "descriptors.h"
-#include "frontend.h"
+#include "rubi_server/board.h"
+#include "rubi_server/communication.h"
+#include "rubi_server/descriptors.h"
+#include "rubi_server/frontend.h"
+
+#include "rclcpp/rclcpp.hpp"
 
 class RosBoardHandler;
-class BoardCommunicationHandler;
 
-class RosModule : public RubiFrontend
+class RosModule: public RubiFrontend
 {
-    friend class RosBoardHandler;
+private:
+  std::vector < sptr < RosBoardHandler >> boards;
+  std::vector < std::string > cans_names;
 
-  private:
-    struct ros_stuff_t;
-    ros_stuff_t *ros_stuff;
+  Logger log {"RosModule"};
 
-    std::vector<sptr<RosBoardHandler>> boards;
-    std::vector<std::string> cans_names;
+public:
+  RosModule();
+  RosModule(RosModule const &) = delete;
+  void operator = (RosModule const &) = delete;
 
-    Logger log{"RosModule"};
+  bool Init(int argc, char ** argv) override;
+  std::vector < std::string > GetCansNames() override;
 
-  public:
-    RosModule();
-    RosModule(RosModule const &) = delete;
-    void operator=(RosModule const &) = delete;
+  void Spin() override;
+  bool Quit() override;
 
-    bool Init(int argc, char **argv) override;
-    std::vector<std::string> GetCansNames() override;
+  void LogInfo(std::string msg) override;
+  void LogWarning(std::string msg) override;
+  void LogError(std::string msg) override;
 
-    void Spin() override;
-    bool Quit() override;
+  void ReportCansUtilization(std::vector < float > util) override;
 
-    void LogInfo(std::string msg) override;
-    void LogWarning(std::string msg) override;
-    void LogError(std::string msg) override;
-
-    void ReportCansUtilization(std::vector<float> util) override;
-
-    std::shared_ptr<FrontendBoardHandler> NewBoard(BoardInstance inst) override;
+  std::shared_ptr < FrontendBoardHandler > NewBoard(BoardInstance inst) override;
 };
 
-class RosBoardHandler : public FrontendBoardHandler,
-                        public std::enable_shared_from_this<RosBoardHandler>
+class RosBoardHandler: public FrontendBoardHandler
 {
-    friend class RosModule;
-    RosModule *ros_module;
+  friend class RosModule;
+  RosModule * ros_module;
 
-    struct roshandler_stuff_t;
-    std::unique_ptr<roshandler_stuff_t> ros_stuff;
+  Logger log {"RosBoardHandler"};
 
-    enum fftype_t
-    {
-        fftype_field = 1,
-        fftype_function
-    };
+public:
+  // sptr<BoardCommunicationHandler> BackendReady();
+  BoardInstance board;
 
-    std::vector<int> fieldtable;
-    std::vector<std::pair<fftype_t, int>> fftable;
+  // int GetFieldFfid(int field_id);
+  // int GetFunctionFfid(int function_id);
 
-    Logger log{"RosBoardHandler"};
+  void FFDataInbound(std::vector < uint8_t > & data, int ffid) override;
+  void ReplaceBackendHandler(sptr < BoardCommunicationHandler >) override;
+  void Shutdown() override;
+  void ConnectionLost() override;
 
-  public:
-    sptr<BoardCommunicationHandler> BackendReady();
-    BoardInstance board;
-
-    void FFDataInbound(std::vector<uint8_t> &data, int ffid) override;
-
-    int GetFieldFfid(int field_id);
-    int GetFunctionFfid(int function_id);
-
-    virtual void
-        ReplaceBackendHandler(sptr<BoardCommunicationHandler>) override;
-    virtual void Shutdown() override;
-    virtual void ConnectionLost() override;
-
-    RosBoardHandler(BoardInstance inst, RosModule *ros_module);
-    void Init();
+  RosBoardHandler(BoardInstance inst, RosModule * ros_module);
+  // void Init();
 };
