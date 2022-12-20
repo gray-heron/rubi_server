@@ -53,8 +53,6 @@ bool SocketCan::Send(std::pair<uint16_t, std::vector<uint8_t>> data, bool block)
 boost::optional<std::tuple<uint16_t, std::vector<uint8_t>, timeval>>
 SocketCan::Receive(uint32_t timeout_ms)
 {
-  struct can_frame frame_rd;
-
   msghdr msg = smsg;
   cmsghdr * cmsg;
   timeval tv;
@@ -69,7 +67,7 @@ SocketCan::Receive(uint32_t timeout_ms)
     if (FD_ISSET(soc, &readSet)) {
       iov.iov_len = sizeof(can_frame);
 
-      auto nbytes_can = recvmsg(soc, &msg, 0);
+      recvmsg(soc, &msg, 0);
       for (cmsg = CMSG_FIRSTHDR(&msg);
         cmsg && (cmsg->cmsg_level == SOL_SOCKET);
         cmsg = CMSG_NXTHDR(&msg, cmsg))

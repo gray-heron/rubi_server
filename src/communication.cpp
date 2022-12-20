@@ -28,9 +28,10 @@ void BoardCommunicationHandler::FFDataOutbound(
 BoardCommunicationHandler::BoardCommunicationHandler(
   CanHandler * can_handler,
   uint8_t board_nodeid)
-: can_handler(can_handler), dead(false), addressed(false),
-  operational(false), lost(false), wake(false), keep_alives_missed(0),
-  keep_alive_received(true), received_descriptors(0)
+: keep_alives_missed(0), received_descriptors(0),
+  dead(false), lost(false), operational(false),
+  addressed(false), keep_alive_received(true), wake(false),
+  can_handler(can_handler)
 {
   protocol = std::unique_ptr<ProtocolHandler>(
     new ProtocolHandler(this, board_nodeid, can_handler));

@@ -48,8 +48,6 @@ std::string DataToString(std::vector<uint8_t> data)
 
 void BoardDescriptor::ApplyInfo(uint8_t field_type, std::string value)
 {
-  uint8_t ffid = fieldfunctions.size();
-
   switch (field_type) {
     case RUBI_INFO_BOARD_NAME:
       board_name = value;

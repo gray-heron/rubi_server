@@ -43,7 +43,7 @@ class ProtocolHandler
   uint8_t rubi_rx_buffer[RUBI_BUFFER_SIZE];
   int32_t rubi_tx_cursor_low;
   int32_t rubi_tx_cursor_high;
-  rubi_dataheader rubi_tx_current_header = {0, 0, 0};
+  rubi_dataheader rubi_tx_current_header = {0, 0, 0, 0};
   uint16_t board_nodeid;
   uint32_t block_transfer, blocks_sent, blocks_received;
 

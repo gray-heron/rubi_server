@@ -26,7 +26,7 @@ public:
   virtual int GetFFType() = 0;
 
   explicit FFDescriptor(int ffid)
-  : ffid(ffid), typecode(0), complete(0) {}
+  : typecode(0), ffid(ffid), complete(false) {}
   virtual ~FFDescriptor() {}
   virtual bool CheckCompleteness();
 

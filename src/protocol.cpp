@@ -7,8 +7,9 @@ ProtocolHandler::ProtocolHandler(
   BoardCommunicationHandler * _board_handler,
   uint8_t _board_nodeid,
   CanHandler * _can_handler)
-: can_handler(_can_handler), board_handler(_board_handler),
-  board_nodeid(_board_nodeid)
+: board_nodeid(_board_nodeid),
+  board_handler(_board_handler),
+  can_handler(_can_handler)
 {
   rubi_tx_cursor_high = 0;
   rubi_tx_cursor_low = 0;
@@ -311,7 +312,7 @@ void ProtocolHandler::SendFFData(
   rubi_dataheader h = {cob, fftype, ffid, (uint8_t)data.size()};
 
   rubi_tx_enqueue_back(reinterpret_cast<uint8_t *>(&h), sizeof(h));
-  rubi_tx_enqueue_back((uint8_t *)data.data(), data.size());
+  rubi_tx_enqueue_back(data.data(), data.size());
 
   rubi_continue_tx();
 }
@@ -321,7 +322,7 @@ void ProtocolHandler::SendCommand(
   const std::vector<uint8_t> & data)
 {
   ASSERT(data.size() < 7);
-  uint16_t cob = RUBI_ADDRESS_RANGE1_LOW + board_nodeid;
+  // uint16_t cob = RUBI_ADDRESS_RANGE1_LOW + board_nodeid;
 
   auto data_and_header = std::vector<uint8_t>();
   data_and_header.resize(2 + data.size());
